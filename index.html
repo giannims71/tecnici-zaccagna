@@ -58,7 +58,9 @@
                 <div class="h-6 w-px bg-indigo-700"></div>
                 <div class="flex bg-indigo-950 p-1 rounded-lg border border-indigo-800 text-xs">
                     <button id="role-docente" onclick="switchRole('docente')" class="px-3 py-1.5 rounded-md font-medium transition bg-indigo-600 text-white shadow">Docente</button>
-                    <button id="role-tecnico" onclick="switchRole('tecnico')" class="px-3 py-1.5 rounded-md font-medium transition text-indigo-300 hover:text-white">Tecnico / Admin</button>
+                    <button id="role-tecnico" onclick="switchRole('tecnico')" class="px-3 py-1.5 rounded-md font-medium transition text-indigo-300 hover:text-white">
+                        <i class="fa-solid fa-lock text-xs mr-1"></i>Tecnico / Admin
+                    </button>
                 </div>
             </div>
         </div>
@@ -67,20 +69,12 @@
     <!-- Main Content Container -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col space-y-6">
 
-        <!-- Public / Form Mode Banner (Hidden by default unless ?form=1) -->
-        <div id="form-mode-banner" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between shadow-sm">
-            <div class="flex items-center space-x-3 mb-2 sm:mb-0">
-                <div class="bg-emerald-600 text-white p-2 rounded-lg">
-                    <i class="fa-solid fa-file-lines text-lg"></i>
-                </div>
-                <div>
-                    <h2 class="text-sm font-bold text-emerald-900">Modalità Modulo di Prenotazione Pubblico</h2>
-                    <p class="text-xs text-emerald-700">Compila i campi sottostanti per inviare la tua richiesta direttamente ai tecnici dell'istituto.</p>
-                </div>
+        <!-- Docente Banner -->
+        <div id="read-only-banner" class="bg-indigo-50 border border-indigo-200 rounded-xl p-3.5 flex items-center justify-between text-xs text-indigo-900 shadow-sm">
+            <div class="flex items-center space-x-2.5">
+                <i class="fa-solid fa-paper-plane text-indigo-600 text-base"></i>
+                <span><strong>Modalità Docente:</strong> Puoi consultare l'orario delle risorse ed effettuare una nuova richiesta di prenotazione compilando l'apposita maschera. Le richieste saranno in attesa di conferma dai tecnici.</span>
             </div>
-            <button onclick="openBookingModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow">
-                <i class="fa-solid fa-plus mr-1.5"></i> Nuova Prenotazione Ora
-            </button>
         </div>
 
         <!-- Dashboard Stats & Quick Actions -->
@@ -118,11 +112,11 @@
                         <i class="fa-solid fa-calendar-plus text-xl"></i>
                     </div>
                     <div>
-                        <p class="text-xs font-medium text-slate-500 uppercase">Nuova Istanza</p>
-                        <p class="text-xs text-slate-600">Prenota risorsa</p>
+                        <p class="text-xs font-medium text-slate-500 uppercase">Nuova Richiesta</p>
+                        <p id="action-subtext" class="text-xs text-slate-600">Docente: Richiedi</p>
                     </div>
                 </div>
-                <button onclick="openBookingModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition">
+                <button id="main-book-btn" onclick="tryOpenBookingModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition cursor-pointer">
                     Prenota
                 </button>
             </div>
@@ -296,13 +290,13 @@
                     </div>
                 </div>
 
-                <!-- Notebook Specific Quantity Container (Hidden by default) -->
+                <!-- Notebook Specific Quantity Container -->
                 <div id="notebook-count-container" class="hidden bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Numero Notebook Richiesti (Max 8)</label>
                     <input type="number" id="book-notebook-qty" min="1" max="8" value="8" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
 
-                <!-- Topo Material Specific Description Container (Hidden by default) -->
+                <!-- Topo Material Specific Description Container -->
                 <div id="topo-material-container" class="hidden bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Specifica Strumentazione / Materiale Topografia *</label>
                     <input type="text" id="book-topo-material" placeholder="Es. Stazione totale, stadia, rotella metrica..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
@@ -334,7 +328,7 @@
                 </button>
             </div>
             <div class="p-6 space-y-4 text-center">
-                <p class="text-xs text-slate-600">Condividi questo QR Code o invia il link diretto ai docenti per permettere loro di prenotare i laboratori e le risorse in autonomia (stile Google Form).</p>
+                <p class="text-xs text-slate-600">Condividi questo QR Code o invia il link diretto ai docenti per consultare ed inviare richieste di prenotazione.</p>
                 
                 <!-- QR Code Box -->
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 inline-block mx-auto">
@@ -455,6 +449,9 @@
     <!-- FullCalendar JS -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <script>
+        // Password di protezione per ruolo Tecnico / Admin
+        const TECH_PASSWORD = "610106";
+
         // Global State & Mappings
         const LAB_COLORS = {
             "Topografia (P1)": "#8b5cf6",
@@ -467,7 +464,7 @@
             "Materiale Topografia": "#0891b2"
         };
 
-        let currentRole = 'docente';
+        let currentRole = 'docente'; // Modalità predefinita docente
         let currentTab = 'calendar';
         let calendar = null;
         let activeDetailBookingId = null;
@@ -506,13 +503,7 @@
             renderPendingTable();
             renderAllBookingsTable();
             updateStats();
-
-            // Check if opened as form via query param ?form=1
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('form') === '1') {
-                document.getElementById('form-mode-banner').classList.remove('hidden');
-                openBookingModal();
-            }
+            applyRoleUI();
         });
 
         // Switch Tabs
@@ -534,24 +525,53 @@
             }
         }
 
-        // Switch Role
+        // Switch Role con verifica Password 610106
         function switchRole(role) {
-            currentRole = role;
+            if (role === 'tecnico' && currentRole !== 'tecnico') {
+                const passwordInput = prompt("Inserisci la password per l'accesso Tecnico / Admin:");
+                if (passwordInput === TECH_PASSWORD) {
+                    currentRole = 'tecnico';
+                    alert("Accesso Tecnico effettuato con successo!");
+                } else {
+                    alert("Password errata! Accesso negato.");
+                    return;
+                }
+            } else if (role === 'docente') {
+                currentRole = 'docente';
+            }
+
+            applyRoleUI();
+            renderPendingTable();
+            renderAllBookingsTable();
+        }
+
+        function applyRoleUI() {
             const docBtn = document.getElementById('role-docente');
             const tecBtn = document.getElementById('role-tecnico');
             const addLabBtn = document.getElementById('add-lab-btn');
+            const mainBookBtn = document.getElementById('main-book-btn');
+            const actionSubtext = document.getElementById('action-subtext');
+            const readOnlyBanner = document.getElementById('read-only-banner');
 
-            if (role === 'docente') {
+            if (currentRole === 'docente') {
                 docBtn.className = "px-3 py-1.5 rounded-md font-medium transition bg-indigo-600 text-white shadow";
                 tecBtn.className = "px-3 py-1.5 rounded-md font-medium transition text-indigo-300 hover:text-white";
                 addLabBtn.classList.add('hidden');
+                mainBookBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition cursor-pointer";
+                actionSubtext.textContent = "Docente: Richiedi";
+                readOnlyBanner.classList.remove('hidden');
             } else {
                 tecBtn.className = "px-3 py-1.5 rounded-md font-medium transition bg-indigo-600 text-white shadow";
                 docBtn.className = "px-3 py-1.5 rounded-md font-medium transition text-indigo-300 hover:text-white";
                 addLabBtn.classList.remove('hidden');
+                mainBookBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition cursor-pointer";
+                actionSubtext.textContent = "Inserisci / Approva";
+                readOnlyBanner.classList.add('hidden');
             }
-            renderPendingTable();
-            renderAllBookingsTable();
+        }
+
+        function tryOpenBookingModal() {
+            openBookingModal();
         }
 
         // Calendar Initialization
@@ -562,7 +582,7 @@
                 locale: 'it',
                 validRange: {
                     start: '2026-01-01',
-                    end: '2027-06-11' // Fino al 10 giugno 2027 incluso
+                    end: '2027-06-11'
                 },
                 headerToolbar: {
                     left: 'prev,next today',
@@ -591,10 +611,9 @@
         }
 
         function prepareCalendarEvents() {
-            let filtered = bookings;
-            if (selectedLabFilter !== 'ALL') {
-                filtered = bookings.filter(b => b.lab === selectedLabFilter);
-            }
+            let filtered = selectedLabFilter === 'ALL' 
+                ? bookings 
+                : bookings.filter(b => b.lab === selectedLabFilter);
 
             let events = filtered.map(b => {
                 let color = LAB_COLORS[b.lab] || '#2563eb';
@@ -614,7 +633,7 @@
                 };
             });
 
-            // Aggiungi eventi fissi ricorrenti di Topografia e Informatica se rientrano nel filtro
+            // Aggiungi eventi fissi ricorrenti di Topografia e Informatica
             const recurringEvents = getRecurringFixedEvents();
             recurringEvents.forEach(re => {
                 if (selectedLabFilter === 'ALL' || selectedLabFilter === re.lab) {
@@ -632,40 +651,33 @@
 
             let curr = new Date(startDate);
             while (curr <= endDate) {
-                let dayOfWeek = curr.getDay(); // 1: Lun, 2: Mar, 3: Mer, 4: Gio, 5: Ven
+                let dayOfWeek = curr.getDay();
                 let dateStr = curr.toISOString().split('T')[0];
 
                 // Topografia (P1) Orari fissi
-                // Lunedì (1): 1ª-4ª ora
                 if (dayOfWeek === 1) {
-                    events.push({ id: `fixed-topo-${dateStr}-1`, title: '🔒 Topografia - Fisso (1ª-4ª)', start: `${dateStr}T08:00`, end: `${dateStr}T12:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-1`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (1ª-4ª)', start: `${dateStr}T08:00`, end: `${dateStr}T12:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
-                // Martedì (2): 1ª-3ª ora e 5ª-6ª ora
                 if (dayOfWeek === 2) {
-                    events.push({ id: `fixed-topo-${dateStr}-2a`, title: '🔒 Topografia - Fisso (1ª-3ª)', start: `${dateStr}T08:00`, end: `${dateStr}T11:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
-                    events.push({ id: `fixed-topo-${dateStr}-2b`, title: '🔒 Topografia - Fisso (5ª-6ª)', start: `${dateStr}T12:00`, end: `${dateStr}T14:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-2a`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (1ª-3ª)', start: `${dateStr}T08:00`, end: `${dateStr}T11:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-2b`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (5ª-6ª)', start: `${dateStr}T12:00`, end: `${dateStr}T14:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
-                // Mercoledì (3): 2ª-5ª ora
                 if (dayOfWeek === 3) {
-                    events.push({ id: `fixed-topo-${dateStr}-3`, title: '🔒 Topografia - Fisso (2ª-5ª)', start: `${dateStr}T09:00`, end: `${dateStr}T13:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-3`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (2ª-5ª)', start: `${dateStr}T09:00`, end: `${dateStr}T13:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
-                // Giovedì (4): Ultime 5 ore (2ª-6ª ora)
                 if (dayOfWeek === 4) {
-                    events.push({ id: `fixed-topo-${dateStr}-4`, title: '🔒 Topografia - Fisso (2ª-6ª)', start: `${dateStr}T09:00`, end: `${dateStr}T14:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-4`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (2ª-6ª)', start: `${dateStr}T09:00`, end: `${dateStr}T14:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
 
                 // Informatica (P2) Orari fissi
-                // Lunedì (1): 1ª e 2ª ora
                 if (dayOfWeek === 1) {
-                    events.push({ id: `fixed-info-${dateStr}-1`, title: '🔒 Informatica - Fisso (1ª-2ª)', start: `${dateStr}T08:00`, end: `${dateStr}T10:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                    events.push({ id: `fixed-info-${dateStr}-1`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (1ª-2ª)', start: `${dateStr}T08:00`, end: `${dateStr}T10:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
                 }
-                // Martedì (2): 5ª e 6ª ora
                 if (dayOfWeek === 2) {
-                    events.push({ id: `fixed-info-${dateStr}-2`, title: '🔒 Informatica - Fisso (5ª-6ª)', start: `${dateStr}T12:00`, end: `${dateStr}T14:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                    events.push({ id: `fixed-info-${dateStr}-2`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (5ª-6ª)', start: `${dateStr}T12:00`, end: `${dateStr}T14:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
                 }
-                // Mercoledì (3): 5ª ora
                 if (dayOfWeek === 3) {
-                    events.push({ id: `fixed-info-${dateStr}-3`, title: '🔒 Informatica - Fisso (5ª)', start: `${dateStr}T12:00`, end: `${dateStr}T13:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                    events.push({ id: `fixed-info-${dateStr}-3`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (5ª)', start: `${dateStr}T12:00`, end: `${dateStr}T13:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
                 }
 
                 curr.setDate(curr.getDate() + 1);
@@ -681,23 +693,23 @@
             }
         }
 
-        // Controllo vincoli orari fissi Topografia e Informatica prima della prenotazione
         function isFixedConflict(lab, dateStr, slotType) {
             const dateObj = new Date(dateStr);
-            const dayOfWeek = dateObj.getDay(); // 1: Lun, 2: Mar, 3: Mer, 4: Gio
+            const dayOfWeek = dateObj.getDay();
 
             if (lab === 'Topografia (P1)') {
                 if (dayOfWeek === 1 && ['1', '2', '3', '4'].includes(slotType)) return true;
                 if (dayOfWeek === 2 && ['1', '2', '3', '5', '6'].includes(slotType)) return true;
                 if (dayOfWeek === 3 && ['2', '3', '4', '5'].includes(slotType)) return true;
                 if (dayOfWeek === 4 && ['2', '3', '4', '5', '6'].includes(slotType)) return true;
-                if (slotType === 'full') return true; // Giornata intera confligge sempre
+                if (slotType === 'full') return true;
             }
 
             if (lab === 'Informatica (P2)') {
                 if (dayOfWeek === 1 && ['1', '2'].includes(slotType)) return true;
                 if (dayOfWeek === 2 && ['5', '6'].includes(slotType)) return true;
                 if (dayOfWeek === 3 && ['5'].includes(slotType)) return true;
+                if (slotType === 'full') return true;
             }
 
             return false;
@@ -760,20 +772,17 @@
                 return;
             }
 
-            // Verifica conflitti con orario fisso scolastico
             if (isFixedConflict(lab, date, slotType)) {
                 alert(`Impossibile prenotare ${lab}: l'orario selezionato coincide con le ore di occupazione fissa scolastica!`);
                 return;
             }
 
-            // Verifica unicità prenotazione (massimo 1 prenotazione per laboratorio nello stesso giorno/ora)
             const existingConflict = bookings.find(b => b.lab === lab && b.date === date && b.slotType === slotType && b.status !== 'rejected');
             if (existingConflict) {
                 alert(`Attenzione: Esiste già una prenotazione confermata o in attesa per "${lab}" in questa data e fascia oraria.`);
                 return;
             }
 
-            // Calcolo orari inizio e fine in base alla fascia
             let startTime = '08:00', endTime = '09:00';
             if (slotType === '1') { startTime = '08:00'; endTime = '09:00'; }
             else if (slotType === '2') { startTime = '09:00'; endTime = '10:00'; }
@@ -783,46 +792,34 @@
             else if (slotType === '6') { startTime = '13:00'; endTime = '14:00'; }
             else if (slotType === 'full') { startTime = '08:00'; endTime = '14:00'; }
 
+            // Se l'utente è docente la prenotazione va "In Attesa", se è Tecnico viene approvata direttamente
+            const bookingStatus = currentRole === 'tecnico' ? 'approved' : 'pending';
+
             const newBooking = {
                 id: 'b_' + Date.now(),
                 lab, teacher, subject, schoolClass, date, slotType, startTime, endTime, notebookQty, topoMaterial, notes,
-                status: currentRole === 'tecnico' ? 'approved' : 'pending'
+                status: bookingStatus
             };
 
             bookings.push(newBooking);
             closeBookingModal();
             refreshAll();
 
-            // Invio Email automatica di notifica tecnici.zaccagna@gmail.com
-            const emailSubject = encodeURIComponent(`Nuova Prenotazione: ${lab} - ${date}`);
-            const emailBody = encodeURIComponent(
-                `È stata inserita una nuova richiesta di prenotazione:\n\n` +
-                `- Risorsa: ${lab}\n` +
-                `- Docente: ${teacher}\n` +
-                `- Materia: ${subject}\n` +
-                `- Classe: ${schoolClass}\n` +
-                `- Data: ${date} (${startTime} - ${endTime})\n` +
-                (notebookQty ? `- Notebook: ${notebookQty}\n` : '') +
-                (topoMaterial ? `- Materiale Topografia: ${topoMaterial}\n` : '') +
-                `- Note: ${notes}\n\n` +
-                `Accedi al portale per approvare o gestire la richiesta.`
-            );
-            
-            setTimeout(() => {
-                window.location.href = `mailto:tecnici.zaccagna@gmail.com?subject=${emailSubject}&body=${emailBody}`;
-            }, 300);
+            if (currentRole === 'docente') {
+                alert(`Richiesta inoltrata con successo! La prenotazione per "${lab}" è in stato "In Attesa" di approvazione da parte dei tecnici.`);
+            } else {
+                alert(`Prenotazione per "${lab}" registrata e approvata con successo!`);
+            }
         }
 
-        // Tables & Stats Renders
         function refreshAll() {
-            renderLabsGrid();
-            renderPendingTable();
-            renderAllBookingsTable();
-            updateStats();
             if (calendar) {
                 calendar.removeAllEvents();
                 calendar.addEventSource(prepareCalendarEvents());
             }
+            renderPendingTable();
+            renderAllBookingsTable();
+            updateStats();
         }
 
         function updateStats() {
@@ -846,7 +843,7 @@
                     </div>
                     <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                         <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg">Disponibile</span>
-                        <button onclick="openBookingModalForLab('${l.name}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Prenota &rarr;</button>
+                        <button onclick="openBookingModalForLab('${l.name}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Richiedi / Prenota &rarr;</button>
                     </div>
                 </div>
             `).join('');
@@ -860,7 +857,7 @@
 
         function renderPendingTable() {
             const tbody = document.getElementById('bookings-table-body');
-            const activeBookings = bookings; // Visualizza tutte
+            const activeBookings = bookings;
 
             if (activeBookings.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 text-xs">Nessuna prenotazione registrata.</td></tr>`;
@@ -963,7 +960,7 @@
         }
 
         function approveCurrentBooking() {
-            if (!activeDetailBookingId) return;
+            if (!activeDetailBookingId || currentRole !== 'tecnico') return;
             const b = bookings.find(item => item.id === activeDetailBookingId);
             if (b) {
                 b.status = 'approved';
@@ -973,6 +970,7 @@
         }
 
         function quickApprove(id) {
+            if (currentRole !== 'tecnico') return;
             const b = bookings.find(item => item.id === id);
             if (b) {
                 b.status = 'approved';
@@ -981,7 +979,7 @@
         }
 
         function rejectCurrentBooking() {
-            if (!activeDetailBookingId) return;
+            if (!activeDetailBookingId || currentRole !== 'tecnico') return;
             const b = bookings.find(item => item.id === activeDetailBookingId);
             if (b) {
                 b.status = 'rejected';
@@ -992,6 +990,7 @@
 
         // Add Lab Modal (Admin)
         function openLabModal() {
+            if (currentRole !== 'tecnico') return;
             document.getElementById('lab-modal').classList.remove('hidden');
             document.getElementById('lab-form').reset();
         }
@@ -1002,6 +1001,8 @@
 
         function handleLabSubmit(e) {
             e.preventDefault();
+            if (currentRole !== 'tecnico') return;
+
             const name = document.getElementById('lab-name').value;
             const location = document.getElementById('lab-location').value;
             const color = document.getElementById('lab-color').value;
@@ -1017,7 +1018,6 @@
             closeLabModal();
             renderLabsGrid();
 
-            // Aggiorna anche i menu select
             const selects = document.querySelectorAll('#book-lab, #calendar-lab-filter');
             selects.forEach(sel => {
                 const opt = document.createElement('option');
@@ -1031,20 +1031,14 @@
         function openShareFormModal() {
             document.getElementById('share-form-modal').classList.remove('hidden');
             
-            // Genera URL pulito per form pubblico
             let cleanUrl = window.location.href.split('?')[0];
-            if (cleanUrl.startsWith('blob:') || cleanUrl.startsWith('about:')) {
-                cleanUrl = 'https://tecnici-zaccagna.netlify.app/index.html'; // fallback pulito
-            }
-            const formUrl = cleanUrl + '?form=1';
+            const formUrl = cleanUrl;
 
             document.getElementById('share-url-input').value = formUrl;
             
-            // Email share link
             const emailLink = document.getElementById('email-share-link');
-            emailLink.href = `mailto:?subject=${encodeURIComponent('Modulo Prenotazione Laboratori - Tecnici Zaccagna')}&body=${encodeURIComponent('Gentili docenti, potete effettuare le prenotazioni dei laboratori tramite il seguente modulo online:\n\n' + formUrl)}`;
+            emailLink.href = `mailto:?subject=${encodeURIComponent('Calendario Laboratori - Tecnici Zaccagna')}&body=${encodeURIComponent('Gentili docenti, potete consultare il calendario delle disponibilità dei laboratori al seguente link:\n\n' + formUrl)}`;
 
-            // Render QR Code
             const qrContainer = document.getElementById('qrcode-container');
             qrContainer.innerHTML = '';
             
@@ -1072,7 +1066,7 @@
             input.setSelectionRange(0, 99999);
             try {
                 document.execCommand('copy');
-                alert('URL del modulo copiato negli appunti!');
+                alert('URL del calendario copiato negli appunti!');
             } catch (err) {
                 alert('Impossibile copiare automaticamente.');
             }
