@@ -456,6 +456,9 @@
         // Password di protezione per ruolo Tecnico / Admin
         const TECH_PASSWORD = "610106";
 
+        // URL Google Apps Script fornito dall'utente per invio email automatico
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwzdpBuzAfvKmyFjAtqobNUq5jvqp6jNqPFsU7VAxqKu7dDvt11sXVXedsoVfVKWC_mg/exec";
+
         // Global State & Mappings
         const LAB_COLORS = {
             "Topografia (P1)": "#8b5cf6",
@@ -468,7 +471,7 @@
             "Materiale Topografia": "#0891b2"
         };
 
-        let currentRole = 'docente'; // Modalità predefinita docente
+        let currentRole = 'docente';
         let currentTab = 'calendar';
         let calendar = null;
         let activeDetailBookingId = null;
@@ -637,7 +640,6 @@
                 };
             });
 
-            // Aggiungi eventi fissi ricorrenti di Topografia e Informatica
             const recurringEvents = getRecurringFixedEvents();
             recurringEvents.forEach(re => {
                 if (selectedLabFilter === 'ALL' || selectedLabFilter === re.lab) {
@@ -658,7 +660,6 @@
                 let dayOfWeek = curr.getDay();
                 let dateStr = curr.toISOString().split('T')[0];
 
-                // Topografia (P1) Orari fissi
                 if (dayOfWeek === 1) {
                     events.push({ id: `fixed-topo-${dateStr}-1`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (1ª-4ª)', start: `${dateStr}T08:00`, end: `${dateStr}T12:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
@@ -673,7 +674,6 @@
                     events.push({ id: `fixed-topo-${dateStr}-4`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (2ª-6ª)', start: `${dateStr}T09:00`, end: `${dateStr}T14:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
 
-                // Informatica (P2) Orari fissi
                 if (dayOfWeek === 1) {
                     events.push({ id: `fixed-info-${dateStr}-1`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (1ª-2ª)', start: `${dateStr}T08:00`, end: `${dateStr}T10:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
                 }
@@ -719,7 +719,6 @@
             return false;
         }
 
-        // Booking Modal Management
         function openBookingModal() {
             document.getElementById('booking-modal').classList.remove('hidden');
             document.getElementById('booking-form').reset();
@@ -797,7 +796,6 @@
             else if (slotType === '6') { startTime = '13:00'; endTime = '14:00'; }
             else if (slotType === 'full') { startTime = '08:00'; endTime = '14:00'; }
 
-            // Se l'utente è docente la prenotazione va "In Attesa", se è Tecnico viene approvata direttamente
             const bookingStatus = currentRole === 'tecnico' ? 'approved' : 'pending';
 
             const newBooking = {
@@ -996,26 +994,34 @@
             }
         }
 
+        // Funzione di Invio Automatico via Google Apps Script (Zero Pop-up, Automatico da tecnici.zaccagna@gmail.com)
         function sendNotificationEmail(booking, statusType) {
             if (!booking.teacherEmail) {
                 alert(`Prenotazione ${statusType}, ma non è stata inserita l'email del docente per la notifica.`);
                 return;
             }
 
-            const techEmail = "tecnici.zaccagna@gmail.com";
             const subjectText = `Esito Prenotazione Laboratorio Zaccagna - ${statusType}`;
-            const bodyText = `Gentile ${booking.teacher},\n\nLa Sua richiesta di prenotazione per la risorsa "${booking.lab}" in data ${booking.date} (${booking.startTime}-${booking.endTime}) per la classe ${booking.schoolClass} è stata ${statusType}.\n\nNote/Dettagli: ${booking.notes || 'Nessuna'}\n\nCordiali saluti,\nUfficio Tecnico Zaccagna (${techEmail})`;
+            const bodyText = `Gentile ${booking.teacher},\n\nLa Sua richiesta di prenotazione per la risorsa "${booking.lab}" in data ${booking.date} (${booking.startTime}-${booking.endTime}) per la classe ${booking.schoolClass} è stata ${statusType}.\n\nNote/Dettagli: ${booking.notes || 'Nessuna'}\n\nCordiali saluti,\nUfficio Tecnico Zaccagna (tecnici.zaccagna@gmail.com)`;
 
-            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(booking.teacherEmail)}&su=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`;
-            const mailtoUrl = `mailto:${booking.teacherEmail}?subject=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`;
-
-            // Tenta l'apertura diretta di Gmail Web
-            const win = window.open(gmailUrl, '_blank');
-
-            // Se il pop-up viene bloccato dal browser, ricorre al link mailto standard
-            if (!win || win.closed || typeof win.closed === 'undefined') {
-                window.location.href = mailtoUrl;
-            }
+            // Invio tramite Google Apps Script API
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    to: booking.teacherEmail,
+                    subject: subjectText,
+                    body: bodyText
+                })
+            }).then(() => {
+                alert(`Notifica inviata con successo via e-mail al docente (${booking.teacherEmail}) tramite l'account ufficiali tecnici.zaccagna@gmail.com!`);
+            }).catch(err => {
+                console.error(err);
+                alert("Errore durante l'invio dell'e-mail.");
+            });
         }
 
         // Add Lab Modal (Admin)
