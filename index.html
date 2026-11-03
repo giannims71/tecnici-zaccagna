@@ -1005,26 +1005,16 @@
             const techEmail = "tecnici.zaccagna@gmail.com";
             const subjectText = `Esito Prenotazione Laboratorio Zaccagna - ${statusType}`;
             const bodyText = `Gentile ${booking.teacher},\n\nLa Sua richiesta di prenotazione per la risorsa "${booking.lab}" in data ${booking.date} (${booking.startTime}-${booking.endTime}) per la classe ${booking.schoolClass} è stata ${statusType}.\n\nNote/Dettagli: ${booking.notes || 'Nessuna'}\n\nCordiali saluti,\nUfficio Tecnico Zaccagna (${techEmail})`;
-            
-            // Link per l'apertura diretta dell'interfaccia di composizione di Gmail Web
+
             const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(booking.teacherEmail)}&su=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`;
             const mailtoUrl = `mailto:${booking.teacherEmail}?subject=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`;
 
-            const choice = confirm(
-                `Stato prenotazione aggiornato a: ${statusType}\n\n` +
-                `Destinatario: ${booking.teacherEmail}\n` +
-                `Mittente Ufficiale: ${techEmail}\n\n` +
-                `Premendo OK si aprirà Gmail Web per inviare la conferma dal tuo account tecnici.zaccagna@gmail.com.`
-            );
+            // Tenta l'apertura diretta di Gmail Web
+            const win = window.open(gmailUrl, '_blank');
 
-            if (choice) {
-                // Tenta l'apertura diretta di Gmail Web (ideale per browser)
-                const gmailWin = window.open(gmailUrl, '_blank');
-                
-                // Backup con client locale se la finestra viene bloccata dai popup
-                if (!gmailWin || gmailWin.closed || typeof gmailWin.closed == 'undefined') {
-                    window.open(mailtoUrl, '_self');
-                }
+            // Se il pop-up viene bloccato dal browser, ricorre al link mailto standard
+            if (!win || win.closed || typeof win.closed === 'undefined') {
+                window.location.href = mailtoUrl;
             }
         }
 
