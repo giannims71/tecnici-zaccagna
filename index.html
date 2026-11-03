@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tecnici Zaccagna - Prenotazione Laboratori</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- FullCalendar CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+    <!-- QRCode.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="h-full bg-slate-50 text-slate-800 flex flex-col antialiased">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-indigo-900 text-white shadow-md z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-800 p-2.5 rounded-xl border border-indigo-700 shadow-inner">
+                    <i class="fa-solid fa-flask-vial text-xl text-indigo-200"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight tracking-wide">Tecnici Zaccagna</h1>
+                    <p class="text-xs text-indigo-300">Sistema Unificato di Prenotazione Laboratori</p>
+                </div>
+            </div>
+
+            <!-- Header Action Buttons -->
+            <div class="flex items-center space-x-3">
+                <button onclick="openShareFormModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center space-x-2 transition shadow-sm border border-indigo-500">
+                    <i class="fa-solid fa-qrcode text-sm"></i>
+                    <span class="hidden sm:inline">Invia/Condividi Form</span>
+                </button>
+                <div class="h-6 w-px bg-indigo-700"></div>
+                <div class="flex bg-indigo-950 p-1 rounded-lg border border-indigo-800 text-xs">
+                    <button id="role-docente" onclick="switchRole('docente')" class="px-3 py-1.5 rounded-md font-medium transition bg-indigo-600 text-white shadow">Docente</button>
+                    <button id="role-tecnico" onclick="switchRole('tecnico')" class="px-3 py-1.5 rounded-md font-medium transition text-indigo-300 hover:text-white">Tecnico / Admin</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col space-y-6">
+
+        <!-- Public / Form Mode Banner (Hidden by default unless ?form=1) -->
+        <div id="form-mode-banner" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between shadow-sm">
+            <div class="flex items-center space-x-3 mb-2 sm:mb-0">
+                <div class="bg-emerald-600 text-white p-2 rounded-lg">
+                    <i class="fa-solid fa-file-lines text-lg"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-bold text-emerald-900">Modalità Modulo di Prenotazione Pubblico</h2>
+                    <p class="text-xs text-emerald-700">Compila i campi sottostanti per inviare la tua richiesta direttamente ai tecnici dell'istituto.</p>
+                </div>
+            </div>
+            <button onclick="openBookingModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-4 py-2 rounded-lg transition shadow">
+                <i class="fa-solid fa-plus mr-1.5"></i> Nuova Prenotazione Ora
+            </button>
+        </div>
+
+        <!-- Dashboard Stats & Quick Actions -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                    <i class="fa-solid fa-calendar-check text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase">Prenotazioni Totali</p>
+                    <h3 id="stat-total" class="text-2xl font-bold text-slate-800">0</h3>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                <div class="p-3 bg-amber-50 text-amber-600 rounded-xl">
+                    <i class="fa-solid fa-clock-rotate-left text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase">In Attesa</p>
+                    <h3 id="stat-pending" class="text-2xl font-bold text-slate-800">0</h3>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
+                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl">
+                    <i class="fa-solid fa-circle-check text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs font-medium text-slate-500 uppercase">Approvate</p>
+                    <h3 id="stat-approved" class="text-2xl font-bold text-slate-800">0</h3>
+                </div>
+            </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                        <i class="fa-solid fa-calendar-plus text-xl"></i>
+                    </div>
+                    <div>
+                        <p class="text-xs font-medium text-slate-500 uppercase">Nuova Istanza</p>
+                        <p class="text-xs text-slate-600">Prenota risorsa</p>
+                    </div>
+                </div>
+                <button onclick="openBookingModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition">
+                    Prenota
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Tab Control -->
+        <div class="flex border-b border-slate-200 space-x-6">
+            <button onclick="switchTab('calendar')" id="tab-calendar" class="pb-3 text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 flex items-center space-x-2">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>Calendario Unificato</span>
+            </button>
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="pb-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center space-x-2">
+                <i class="fa-solid fa-list-check"></i>
+                <span>Gestione Prenotazioni</span>
+            </button>
+            <button onclick="switchTab('labs')" id="tab-labs" class="pb-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center space-x-2">
+                <i class="fa-solid fa-building-columns"></i>
+                <span>Laboratori & Strumenti</span>
+            </button>
+        </div>
+
+        <!-- TAB 1: CALENDAR VIEW -->
+        <div id="view-calendar" class="space-y-4">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-2 w-full sm:w-auto">
+                    <label for="calendar-lab-filter" class="text-xs font-semibold text-slate-600 uppercase">Filtra per:</label>
+                    <select id="calendar-lab-filter" onchange="filterCalendarByLab()" class="w-full sm:w-64 px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <option value="ALL">Tutte le Risorse & Materiali</option>
+                        <option value="Topografia (P1)">Topografia (P1)</option>
+                        <option value="Stampa 3D (P1)">Stampa 3D (P1)</option>
+                        <option value="Informatica (P2)">Informatica (P2)</option>
+                        <option value="Economia (P3)">Economia (P3)</option>
+                        <option value="Lingue (P3)">Lingue (P3)</option>
+                        <option value="Lingue (tablet P2)">Lingue (tablet P2)</option>
+                        <option value="Notebook (Uff. Tec.)">Notebook (Uff. Tec.) (Max 8)</option>
+                        <option value="Materiale Topografia">Materiale Topografia</option>
+                    </select>
+                </div>
+                <div class="flex items-center space-x-4 text-xs font-medium text-slate-500">
+                    <div class="flex items-center space-x-1.5">
+                        <span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span>
+                        <span>Approvata</span>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+                        <span>In Attesa</span>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="w-3 h-3 rounded-full bg-indigo-600 inline-block"></span>
+                        <span>Fisso Orario</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar Box -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                <div id="calendar" class="min-h-[650px]"></div>
+            </div>
+        </div>
+
+        <!-- TAB 2: DASHBOARD / BOOKINGS LIST -->
+        <div id="view-dashboard" class="hidden space-y-4">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-200 flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 text-sm">Elenco Prenotazioni e Richieste</h3>
+                    <div class="flex space-x-2">
+                        <input type="text" id="search-input" onkeyup="filterBookingsTable()" placeholder="Cerca docente o classe..." class="px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 uppercase text-xs tracking-wider border-b border-slate-200">
+                                <th class="p-3.5 font-semibold">Data & Ora</th>
+                                <th class="p-3.5 font-semibold">Risorsa</th>
+                                <th class="p-3.5 font-semibold">Docente & Classe</th>
+                                <th class="p-3.5 font-semibold">Materia / Dettagli</th>
+                                <th class="p-3.5 font-semibold">Stato</th>
+                                <th class="p-3.5 font-semibold text-right">Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-table-body" class="divide-y divide-slate-100">
+                            <!-- Inserito via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: LABS & INVENTORY -->
+        <div id="view-labs" class="hidden space-y-4">
+            <div class="flex items-center justify-between">
+                <h3 class="font-bold text-slate-800 text-sm">Laboratori e Risorse Informatiche Disponibili</h3>
+                <button id="add-lab-btn" onclick="openLabModal()" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition shadow">
+                    <i class="fa-solid fa-plus mr-1"></i> Aggiungi Risorsa
+                </button>
+            </div>
+            <div id="labs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <!-- Generato via JS -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500 mt-auto">
+        Tecnici Zaccagna &copy; 2026 - Gestione Risorse e Laboratori Scolastici (Calendario attivo fino al 10 Giugno 2027)
+    </footer>
+
+    <!-- MODAL 1: BOOKING FORM -->
+    <div id="booking-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full overflow-hidden border border-slate-100 my-8">
+            <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-calendar-plus text-indigo-300"></i>
+                    <h3 class="font-bold text-base">Tecnici Zaccagna - prenota laboratorio / materiale</h3>
+                </div>
+                <button onclick="closeBookingModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="booking-form" onsubmit="handleBookingSubmit(event)" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Docente Richiedente *</label>
+                        <input type="text" id="book-teacher" required placeholder="Es. Prof. Mario Rossi" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Materia / Attività *</label>
+                        <input type="text" id="book-subject" required placeholder="Es. Informatica / CAD" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Laboratorio / Risorsa *</label>
+                        <select id="book-lab" required onchange="handleLabChange()" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            <option value="">Seleziona Risorsa...</option>
+                            <option value="Topografia (P1)">Topografia (P1)</option>
+                            <option value="Stampa 3D (P1)">Stampa 3D (P1)</option>
+                            <option value="Informatica (P2)">Informatica (P2)</option>
+                            <option value="Economia (P3)">Economia (P3)</option>
+                            <option value="Lingue (P3)">Lingue (P3)</option>
+                            <option value="Lingue (tablet P2)">Lingue (tablet P2)</option>
+                            <option value="Notebook (Uff. Tec.)">Notebook (Uff. Tec.) (Max 8)</option>
+                            <option value="Materiale Topografia">Materiale Topografia</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Classe Coinvolta *</label>
+                        <input type="text" id="book-class" required placeholder="Es. 4ª A (CAT)" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Data Prenotazione * (Max 10 Giu 2027)</label>
+                        <input type="date" id="book-date" required max="2027-06-10" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Ora Scolastica / Fascia *</label>
+                        <select id="book-slot-type" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            <option value="1">1ª Ora (08:00 - 09:00)</option>
+                            <option value="2">2ª Ora (09:00 - 10:00)</option>
+                            <option value="3">3ª Ora (10:00 - 11:00)</option>
+                            <option value="4">4ª Ora (11:00 - 12:00)</option>
+                            <option value="5">5ª Ora (12:00 - 13:00)</option>
+                            <option value="6">6ª Ora (13:00 - 14:00)</option>
+                            <option value="full">Intera Giornata / Mattinata</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Notebook Specific Quantity Container (Hidden by default) -->
+                <div id="notebook-count-container" class="hidden bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Numero Notebook Richiesti (Max 8)</label>
+                    <input type="number" id="book-notebook-qty" min="1" max="8" value="8" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+
+                <!-- Topo Material Specific Description Container (Hidden by default) -->
+                <div id="topo-material-container" class="hidden bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Specifica Strumentazione / Materiale Topografia *</label>
+                    <input type="text" id="book-topo-material" placeholder="Es. Stazione totale, stadia, rotella metrica..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Note o Esigenze Particolari</label>
+                    <textarea id="book-notes" rows="2" placeholder="Software particolari richiesti, configurazioni..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeBookingModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">Annulla</button>
+                    <button type="submit" class="px-5 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow">Invia Richiesta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: SHARE / GOOGLE FORM QR MODAL -->
+    <div id="share-form-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden border border-slate-100">
+            <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-qrcode text-indigo-300"></i>
+                    <h3 class="font-bold text-base">Condividi Modulo Prenotazione</h3>
+                </div>
+                <button onclick="closeShareFormModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 text-center">
+                <p class="text-xs text-slate-600">Condividi questo QR Code o invia il link diretto ai docenti per permettere loro di prenotare i laboratori e le risorse in autonomia (stile Google Form).</p>
+                
+                <!-- QR Code Box -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 inline-block mx-auto">
+                    <div id="qrcode-container" class="flex justify-center"></div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1 text-left">URL Pubblico del Modulo</label>
+                    <div class="flex space-x-2">
+                        <input type="text" id="share-url-input" readonly class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-lg text-slate-600 focus:outline-none">
+                        <button onclick="copyShareUrl()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0">
+                            Copia
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 flex justify-between">
+                    <a id="email-share-link" href="#" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center">
+                        <i class="fa-solid fa-envelope mr-1.5"></i> Invia invito via E-mail
+                    </a>
+                    <button onclick="closeShareFormModal()" class="px-4 py-2 text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: DETAIL BOOKING MODAL -->
+    <div id="detail-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden border border-slate-100">
+            <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-info text-indigo-300"></i>
+                    <h3 class="font-bold text-base">Dettaglio Prenotazione</h3>
+                </div>
+                <button onclick="closeDetailModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4 text-sm">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Risorsa:</span>
+                        <span id="detail-lab" class="font-bold text-slate-800"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Docente:</span>
+                        <span id="detail-teacher" class="font-medium text-slate-800"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Materia:</span>
+                        <span id="detail-subject" class="font-medium text-slate-800"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Classe:</span>
+                        <span id="detail-class" class="font-medium text-slate-800"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Data & Ora:</span>
+                        <span id="detail-datetime" class="font-medium text-slate-800"></span>
+                    </div>
+                    <div id="detail-equipment-container" class="hidden flex justify-between pt-2 border-t border-slate-200">
+                        <span class="text-xs font-semibold text-indigo-600 uppercase">Materiale / Extra:</span>
+                        <span id="detail-equipment" class="font-bold text-indigo-700"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Stato:</span>
+                        <span id="detail-status" class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider"></span>
+                    </div>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-slate-500 uppercase mb-1">Note e Richieste:</span>
+                    <p id="detail-notes" class="text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200 italic min-h-[40px]"></p>
+                </div>
+                <div id="technician-actions" class="hidden pt-3 border-t border-slate-100 flex space-x-2">
+                    <button onclick="approveCurrentBooking()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow">Approva</button>
+                    <button onclick="rejectCurrentBooking()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow">Rifiuta</button>
+                </div>
+                <div class="pt-2 flex justify-end">
+                    <button onclick="closeDetailModal()" class="px-4 py-2 text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition">Chiudi</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: ADD LAB MODAL (Admin) -->
+    <div id="lab-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden border border-slate-100">
+            <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-building-columns text-indigo-300"></i>
+                    <h3 class="font-bold text-base">Nuova Risorsa / Laboratorio</h3>
+                </div>
+                <button onclick="closeLabModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form id="lab-form" onsubmit="handleLabSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nome Risorsa *</label>
+                    <input type="text" id="lab-name" required placeholder="Es. Laboratorio Fisica" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Ubicazione *</label>
+                    <input type="text" id="lab-location" required placeholder="Es. Piano 3 (P3)" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Colore Rappresentativo *</label>
+                    <input type="color" id="lab-color" value="#059669" class="w-full h-10 px-1 py-1 border border-slate-300 rounded-lg bg-white cursor-pointer">
+                </div>
+                <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="closeLabModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">Annulla</button>
+                    <button type="submit" class="px-5 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow">Salva</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FullCalendar JS -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+    <script>
+        // Global State & Mappings
+        const LAB_COLORS = {
+            "Topografia (P1)": "#8b5cf6",
+            "Stampa 3D (P1)": "#06b6d4",
+            "Informatica (P2)": "#2563eb",
+            "Economia (P3)": "#059669",
+            "Lingue (P3)": "#d97706",
+            "Lingue (tablet P2)": "#dc2626",
+            "Notebook (Uff. Tec.)": "#4f46e5",
+            "Materiale Topografia": "#0891b2"
+        };
+
+        let currentRole = 'docente';
+        let currentTab = 'calendar';
+        let calendar = null;
+        let activeDetailBookingId = null;
+        let selectedLabFilter = 'ALL';
+        let qrcodeInstance = null;
+
+        // Mock Data Storage
+        let labs = [
+            { id: 'l1', name: 'Topografia (P1)', location: 'Piano 1 (P1)', color: '#8b5cf6', icon: 'fa-map-location-dot' },
+            { id: 'l7', name: 'Stampa 3D (P1)', location: 'Piano 1 (P1)', color: '#06b6d4', icon: 'fa-cube' },
+            { id: 'l2', name: 'Informatica (P2)', location: 'Piano 2 (P2)', color: '#2563eb', icon: 'fa-desktop' },
+            { id: 'l3', name: 'Economia (P3)', location: 'Piano 3 (P3)', color: '#059669', icon: 'fa-chart-line' },
+            { id: 'l4', name: 'Lingue (P3)', location: 'Piano 3 (P3)', color: '#d97706', icon: 'fa-language' },
+            { id: 'l5', name: 'Lingue (tablet P2)', location: 'Piano 2 (P2)', color: '#dc2626', icon: 'fa-comments' },
+            { id: 'l6', name: 'Notebook (Uff. Tec.)', location: 'Ufficio Tecnico', color: '#4f46e5', icon: 'fa-laptop' },
+            { id: 'l8', name: 'Materiale Topografia', location: 'Magazzino Strumenti', color: '#0891b2', icon: 'fa-toolbox' }
+        ];
+
+        function formatDate(offsetDays) {
+            const d = new Date();
+            d.setDate(d.getDate() + offsetDays);
+            return d.toISOString().split('T')[0];
+        }
+
+        let bookings = [
+            { id: 'b1', lab: 'Informatica (P2)', teacher: 'Prof. Mario Rossi', subject: 'Sviluppo Web', schoolClass: '5ª A (Informatica)', date: formatDate(0), slotType: '2', startTime: '09:00', endTime: '10:00', notebookQty: null, topoMaterial: null, notes: 'Esercitazione HTML5.', status: 'approved' },
+            { id: 'b2', lab: 'Topografia (P1)', teacher: 'Prof.ssa Laura Bianchi', subject: 'Rilievo del Territorio', schoolClass: '4ª A (CAT)', date: formatDate(1), slotType: '3', startTime: '10:00', endTime: '11:00', notebookQty: null, topoMaterial: null, notes: 'Uso GPS.', status: 'pending' },
+            { id: 'b3', lab: 'Notebook (Uff. Tec.)', teacher: 'Prof. Giuseppe Verdi', subject: 'Economia Aziendale', schoolClass: '3ª B (SIA)', date: formatDate(2), slotType: '4', startTime: '11:00', endTime: '12:00', notebookQty: 5, topoMaterial: null, notes: 'Fogli di calcolo.', status: 'approved' },
+            { id: 'b4', lab: 'Materiale Topografia', teacher: 'Prof. Marco Neri', subject: 'Topografia', schoolClass: '3ª A (CAT)', date: formatDate(0), slotType: '5', startTime: '12:00', endTime: '13:00', notebookQty: null, topoMaterial: 'Stazione totale e treppiede', notes: 'Rilievo esterno cortile.', status: 'approved' }
+        ];
+
+        // Initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            initCalendar();
+            renderLabsGrid();
+            renderPendingTable();
+            renderAllBookingsTable();
+            updateStats();
+
+            // Check if opened as form via query param ?form=1
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('form') === '1') {
+                document.getElementById('form-mode-banner').classList.remove('hidden');
+                openBookingModal();
+            }
+        });
+
+        // Switch Tabs
+        function switchTab(tab) {
+            currentTab = tab;
+            ['calendar', 'dashboard', 'labs'].forEach(t => {
+                const el = document.getElementById(`view-${t}`);
+                const btn = document.getElementById(`tab-${t}`);
+                if (t === tab) {
+                    el.classList.remove('hidden');
+                    btn.className = "pb-3 text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 flex items-center space-x-2";
+                } else {
+                    el.classList.add('hidden');
+                    btn.className = "pb-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center space-x-2";
+                }
+            });
+            if (tab === 'calendar' && calendar) {
+                setTimeout(() => calendar.updateSize(), 150);
+            }
+        }
+
+        // Switch Role
+        function switchRole(role) {
+            currentRole = role;
+            const docBtn = document.getElementById('role-docente');
+            const tecBtn = document.getElementById('role-tecnico');
+            const addLabBtn = document.getElementById('add-lab-btn');
+
+            if (role === 'docente') {
+                docBtn.className = "px-3 py-1.5 rounded-md font-medium transition bg-indigo-600 text-white shadow";
+                tecBtn.className = "px-3 py-1.5 rounded-md font-medium transition text-indigo-300 hover:text-white";
+                addLabBtn.classList.add('hidden');
+            } else {
+                tecBtn.className = "px-3 py-1.5 rounded-md font-medium transition bg-indigo-600 text-white shadow";
+                docBtn.className = "px-3 py-1.5 rounded-md font-medium transition text-indigo-300 hover:text-white";
+                addLabBtn.classList.remove('hidden');
+            }
+            renderPendingTable();
+            renderAllBookingsTable();
+        }
+
+        // Calendar Initialization
+        function initCalendar() {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'it',
+                validRange: {
+                    start: '2026-01-01',
+                    end: '2027-06-11' // Fino al 10 giugno 2027 incluso
+                },
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,listWeek'
+                },
+                buttonText: {
+                    today: 'Oggi',
+                    month: 'Mese',
+                    week: 'Settimana',
+                    list: 'Lista'
+                },
+                events: prepareCalendarEvents(),
+                eventClick: function(info) {
+                    openDetailModal(info.event.id);
+                },
+                dateClick: function(info) {
+                    if (info.dateStr > '2027-06-10') {
+                        alert('Il calendario delle prenotazioni è attivo solo fino al 10 Giugno 2027.');
+                        return;
+                    }
+                    openBookingModalWithDate(info.dateStr);
+                }
+            });
+            calendar.render();
+        }
+
+        function prepareCalendarEvents() {
+            let filtered = bookings;
+            if (selectedLabFilter !== 'ALL') {
+                filtered = bookings.filter(b => b.lab === selectedLabFilter);
+            }
+
+            let events = filtered.map(b => {
+                let color = LAB_COLORS[b.lab] || '#2563eb';
+                let statusIcon = b.status === 'approved' ? '✓ ' : b.status === 'pending' ? '⏳ ' : '✕ ';
+                let extraInfo = '';
+                if (b.lab === 'Notebook (Uff. Tec.)') extraInfo = ` [${b.notebookQty || 8} NB]`;
+                if (b.lab === 'Materiale Topografia' && b.topoMaterial) extraInfo = ` [${b.topoMaterial}]`;
+
+                return {
+                    id: b.id,
+                    title: `${statusIcon}${b.lab} - ${b.schoolClass}${extraInfo}`,
+                    start: `${b.date}T${b.startTime}`,
+                    end: `${b.date}T${b.endTime}`,
+                    backgroundColor: b.status === 'approved' ? color : '#f59e0b',
+                    borderColor: b.status === 'approved' ? color : '#d97706',
+                    textColor: '#ffffff'
+                };
+            });
+
+            // Aggiungi eventi fissi ricorrenti di Topografia e Informatica se rientrano nel filtro
+            const recurringEvents = getRecurringFixedEvents();
+            recurringEvents.forEach(re => {
+                if (selectedLabFilter === 'ALL' || selectedLabFilter === re.lab) {
+                    events.push(re);
+                }
+            });
+
+            return events;
+        }
+
+        function getRecurringFixedEvents() {
+            let events = [];
+            let startDate = new Date('2026-01-01');
+            let endDate = new Date('2027-06-10');
+
+            let curr = new Date(startDate);
+            while (curr <= endDate) {
+                let dayOfWeek = curr.getDay(); // 1: Lun, 2: Mar, 3: Mer, 4: Gio, 5: Ven
+                let dateStr = curr.toISOString().split('T')[0];
+
+                // Topografia (P1) Orari fissi
+                // Lunedì (1): 1ª-4ª ora
+                if (dayOfWeek === 1) {
+                    events.push({ id: `fixed-topo-${dateStr}-1`, title: '🔒 Topografia - Fisso (1ª-4ª)', start: `${dateStr}T08:00`, end: `${dateStr}T12:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                }
+                // Martedì (2): 1ª-3ª ora e 5ª-6ª ora
+                if (dayOfWeek === 2) {
+                    events.push({ id: `fixed-topo-${dateStr}-2a`, title: '🔒 Topografia - Fisso (1ª-3ª)', start: `${dateStr}T08:00`, end: `${dateStr}T11:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-2b`, title: '🔒 Topografia - Fisso (5ª-6ª)', start: `${dateStr}T12:00`, end: `${dateStr}T14:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                }
+                // Mercoledì (3): 2ª-5ª ora
+                if (dayOfWeek === 3) {
+                    events.push({ id: `fixed-topo-${dateStr}-3`, title: '🔒 Topografia - Fisso (2ª-5ª)', start: `${dateStr}T09:00`, end: `${dateStr}T13:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                }
+                // Giovedì (4): Ultime 5 ore (2ª-6ª ora)
+                if (dayOfWeek === 4) {
+                    events.push({ id: `fixed-topo-${dateStr}-4`, title: '🔒 Topografia - Fisso (2ª-6ª)', start: `${dateStr}T09:00`, end: `${dateStr}T14:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                }
+
+                // Informatica (P2) Orari fissi
+                // Lunedì (1): 1ª e 2ª ora
+                if (dayOfWeek === 1) {
+                    events.push({ id: `fixed-info-${dateStr}-1`, title: '🔒 Informatica - Fisso (1ª-2ª)', start: `${dateStr}T08:00`, end: `${dateStr}T10:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                }
+                // Martedì (2): 5ª e 6ª ora
+                if (dayOfWeek === 2) {
+                    events.push({ id: `fixed-info-${dateStr}-2`, title: '🔒 Informatica - Fisso (5ª-6ª)', start: `${dateStr}T12:00`, end: `${dateStr}T14:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                }
+                // Mercoledì (3): 5ª ora
+                if (dayOfWeek === 3) {
+                    events.push({ id: `fixed-info-${dateStr}-3`, title: '🔒 Informatica - Fisso (5ª)', start: `${dateStr}T12:00`, end: `${dateStr}T13:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                }
+
+                curr.setDate(curr.getDate() + 1);
+            }
+            return events;
+        }
+
+        function filterCalendarByLab() {
+            selectedLabFilter = document.getElementById('calendar-lab-filter').value;
+            if (calendar) {
+                calendar.removeAllEvents();
+                calendar.addEventSource(prepareCalendarEvents());
+            }
+        }
+
+        // Controllo vincoli orari fissi Topografia e Informatica prima della prenotazione
+        function isFixedConflict(lab, dateStr, slotType) {
+            const dateObj = new Date(dateStr);
+            const dayOfWeek = dateObj.getDay(); // 1: Lun, 2: Mar, 3: Mer, 4: Gio
+
+            if (lab === 'Topografia (P1)') {
+                if (dayOfWeek === 1 && ['1', '2', '3', '4'].includes(slotType)) return true;
+                if (dayOfWeek === 2 && ['1', '2', '3', '5', '6'].includes(slotType)) return true;
+                if (dayOfWeek === 3 && ['2', '3', '4', '5'].includes(slotType)) return true;
+                if (dayOfWeek === 4 && ['2', '3', '4', '5', '6'].includes(slotType)) return true;
+                if (slotType === 'full') return true; // Giornata intera confligge sempre
+            }
+
+            if (lab === 'Informatica (P2)') {
+                if (dayOfWeek === 1 && ['1', '2'].includes(slotType)) return true;
+                if (dayOfWeek === 2 && ['5', '6'].includes(slotType)) return true;
+                if (dayOfWeek === 3 && ['5'].includes(slotType)) return true;
+            }
+
+            return false;
+        }
+
+        // Booking Modal Management
+        function openBookingModal() {
+            document.getElementById('booking-modal').classList.remove('hidden');
+            document.getElementById('booking-form').reset();
+            document.getElementById('notebook-count-container').classList.add('hidden');
+            document.getElementById('topo-material-container').classList.add('hidden');
+        }
+
+        function openBookingModalWithDate(dateStr) {
+            openBookingModal();
+            document.getElementById('book-date').value = dateStr;
+        }
+
+        function closeBookingModal() {
+            document.getElementById('booking-modal').classList.add('hidden');
+        }
+
+        function handleLabChange() {
+            const labSelect = document.getElementById('book-lab');
+            const nbContainer = document.getElementById('notebook-count-container');
+            const topoContainer = document.getElementById('topo-material-container');
+            const topoInput = document.getElementById('book-topo-material');
+
+            if (labSelect && nbContainer && topoContainer && topoInput) {
+                if (labSelect.value === 'Notebook (Uff. Tec.)') {
+                    nbContainer.classList.remove('hidden');
+                    topoContainer.classList.add('hidden');
+                    topoInput.removeAttribute('required');
+                } else if (labSelect.value === 'Materiale Topografia') {
+                    topoContainer.classList.remove('hidden');
+                    nbContainer.classList.add('hidden');
+                    topoInput.setAttribute('required', 'true');
+                } else {
+                    nbContainer.classList.add('hidden');
+                    topoContainer.classList.add('hidden');
+                    topoInput.removeAttribute('required');
+                }
+            }
+        }
+
+        function handleBookingSubmit(e) {
+            e.preventDefault();
+            const teacher = document.getElementById('book-teacher').value;
+            const subject = document.getElementById('book-subject').value;
+            const lab = document.getElementById('book-lab').value;
+            const schoolClass = document.getElementById('book-class').value;
+            const date = document.getElementById('book-date').value;
+            const slotType = document.getElementById('book-slot-type').value;
+            const notes = document.getElementById('book-notes').value;
+            const notebookQty = lab === 'Notebook (Uff. Tec.)' ? parseInt(document.getElementById('book-notebook-qty').value) : null;
+            const topoMaterial = lab === 'Materiale Topografia' ? document.getElementById('book-topo-material').value : null;
+
+            if (date > '2027-06-10') {
+                alert('La data supera il limite massimo consentito del 10 Giugno 2027.');
+                return;
+            }
+
+            // Verifica conflitti con orario fisso scolastico
+            if (isFixedConflict(lab, date, slotType)) {
+                alert(`Impossibile prenotare ${lab}: l'orario selezionato coincide con le ore di occupazione fissa scolastica!`);
+                return;
+            }
+
+            // Verifica unicità prenotazione (massimo 1 prenotazione per laboratorio nello stesso giorno/ora)
+            const existingConflict = bookings.find(b => b.lab === lab && b.date === date && b.slotType === slotType && b.status !== 'rejected');
+            if (existingConflict) {
+                alert(`Attenzione: Esiste già una prenotazione confermata o in attesa per "${lab}" in questa data e fascia oraria.`);
+                return;
+            }
+
+            // Calcolo orari inizio e fine in base alla fascia
+            let startTime = '08:00', endTime = '09:00';
+            if (slotType === '1') { startTime = '08:00'; endTime = '09:00'; }
+            else if (slotType === '2') { startTime = '09:00'; endTime = '10:00'; }
+            else if (slotType === '3') { startTime = '10:00'; endTime = '11:00'; }
+            else if (slotType === '4') { startTime = '11:00'; endTime = '12:00'; }
+            else if (slotType === '5') { startTime = '12:00'; endTime = '13:00'; }
+            else if (slotType === '6') { startTime = '13:00'; endTime = '14:00'; }
+            else if (slotType === 'full') { startTime = '08:00'; endTime = '14:00'; }
+
+            const newBooking = {
+                id: 'b_' + Date.now(),
+                lab, teacher, subject, schoolClass, date, slotType, startTime, endTime, notebookQty, topoMaterial, notes,
+                status: currentRole === 'tecnico' ? 'approved' : 'pending'
+            };
+
+            bookings.push(newBooking);
+            closeBookingModal();
+            refreshAll();
+
+            // Invio Email automatica di notifica tecnici.zaccagna@gmail.com
+            const emailSubject = encodeURIComponent(`Nuova Prenotazione: ${lab} - ${date}`);
+            const emailBody = encodeURIComponent(
+                `È stata inserita una nuova richiesta di prenotazione:\n\n` +
+                `- Risorsa: ${lab}\n` +
+                `- Docente: ${teacher}\n` +
+                `- Materia: ${subject}\n` +
+                `- Classe: ${schoolClass}\n` +
+                `- Data: ${date} (${startTime} - ${endTime})\n` +
+                (notebookQty ? `- Notebook: ${notebookQty}\n` : '') +
+                (topoMaterial ? `- Materiale Topografia: ${topoMaterial}\n` : '') +
+                `- Note: ${notes}\n\n` +
+                `Accedi al portale per approvare o gestire la richiesta.`
+            );
+            
+            setTimeout(() => {
+                window.location.href = `mailto:tecnici.zaccagna@gmail.com?subject=${emailSubject}&body=${emailBody}`;
+            }, 300);
+        }
+
+        // Tables & Stats Renders
+        function refreshAll() {
+            renderLabsGrid();
+            renderPendingTable();
+            renderAllBookingsTable();
+            updateStats();
+            if (calendar) {
+                calendar.removeAllEvents();
+                calendar.addEventSource(prepareCalendarEvents());
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').textContent = bookings.length;
+            document.getElementById('stat-pending').textContent = bookings.filter(b => b.status === 'pending').length;
+            document.getElementById('stat-approved').textContent = bookings.filter(b => b.status === 'approved').length;
+        }
+
+        function renderLabsGrid() {
+            const grid = document.getElementById('labs-grid');
+            grid.innerHTML = labs.map(l => `
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="p-3 rounded-xl text-white shadow-sm" style="background-color: ${l.color}">
+                            <i class="fa-solid ${l.icon} text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-800 text-sm">${l.name}</h4>
+                            <p class="text-xs text-slate-500">${l.location}</p>
+                        </div>
+                    </div>
+                    <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg">Disponibile</span>
+                        <button onclick="openBookingModalForLab('${l.name}')" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">Prenota &rarr;</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openBookingModalForLab(labName) {
+            openBookingModal();
+            document.getElementById('book-lab').value = labName;
+            handleLabChange();
+        }
+
+        function renderPendingTable() {
+            const tbody = document.getElementById('bookings-table-body');
+            const activeBookings = bookings; // Visualizza tutte
+
+            if (activeBookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 text-xs">Nessuna prenotazione registrata.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = activeBookings.map(b => {
+                let badge = '';
+                if (b.status === 'approved') badge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">Approvata</span>`;
+                else if (b.status === 'pending') badge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800">In Attesa</span>`;
+                else badge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800">Rifiutata</span>`;
+
+                let extraText = '';
+                if (b.notebookQty) extraText = `<br><span class="text-xs text-indigo-600 font-semibold">${b.notebookQty} Notebook</span>`;
+                if (b.topoMaterial) extraText = `<br><span class="text-xs text-cyan-700 font-semibold">${b.topoMaterial}</span>`;
+
+                return `
+                    <tr class="hover:bg-slate-50 transition border-b border-slate-100">
+                        <td class="p-3.5 text-slate-700 font-medium">
+                            ${b.date}<br><span class="text-xs text-slate-400">${b.startTime} - ${b.endTime}</span>
+                        </td>
+                        <td class="p-3.5 font-semibold text-slate-800">${b.lab}</td>
+                        <td class="p-3.5 text-slate-700">${b.teacher}<br><span class="text-xs text-slate-500">${b.schoolClass}</span></td>
+                        <td class="p-3.5 text-slate-600">${b.subject}${extraText}</td>
+                        <td class="p-3.5">${badge}</td>
+                        <td class="p-3.5 text-right space-x-2">
+                            <button onclick="openDetailModal('${b.id}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition">Dettagli</button>
+                            ${currentRole === 'tecnico' && b.status === 'pending' ? `
+                                <button onclick="quickApprove('${b.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition">Approva</button>
+                            ` : ''}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderAllBookingsTable() {
+            renderPendingTable();
+        }
+
+        function filterBookingsTable() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll('#bookings-table-body tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // Detail Modal
+        function openDetailModal(id) {
+            activeDetailBookingId = id;
+            const b = bookings.find(item => item.id === id);
+            if (!b) return;
+
+            document.getElementById('detail-lab').textContent = b.lab;
+            document.getElementById('detail-teacher').textContent = b.teacher;
+            document.getElementById('detail-subject').textContent = b.subject;
+            document.getElementById('detail-class').textContent = b.schoolClass;
+            document.getElementById('detail-datetime').textContent = `${b.date} (${b.startTime} - ${b.endTime})`;
+            document.getElementById('detail-notes').textContent = b.notes || 'Nessuna nota aggiuntiva.';
+
+            const eqContainer = document.getElementById('detail-equipment-container');
+            const eqText = document.getElementById('detail-equipment');
+            if (b.notebookQty) {
+                eqContainer.classList.remove('hidden');
+                eqText.textContent = `${b.notebookQty} Notebook richiesti`;
+            } else if (b.topoMaterial) {
+                eqContainer.classList.remove('hidden');
+                eqText.textContent = b.topoMaterial;
+            } else {
+                eqContainer.classList.add('hidden');
+            }
+
+            const statusEl = document.getElementById('detail-status');
+            if (b.status === 'approved') {
+                statusEl.textContent = 'Approvata';
+                statusEl.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800';
+            } else if (b.status === 'pending') {
+                statusEl.textContent = 'In Attesa';
+                statusEl.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800';
+            } else {
+                statusEl.textContent = 'Rifiutata';
+                statusEl.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800';
+            }
+
+            const techActions = document.getElementById('technician-actions');
+            if (currentRole === 'tecnico' && b.status === 'pending') {
+                techActions.classList.remove('hidden');
+            } else {
+                techActions.classList.add('hidden');
+            }
+
+            document.getElementById('detail-modal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+            activeDetailBookingId = null;
+        }
+
+        function approveCurrentBooking() {
+            if (!activeDetailBookingId) return;
+            const b = bookings.find(item => item.id === activeDetailBookingId);
+            if (b) {
+                b.status = 'approved';
+                closeDetailModal();
+                refreshAll();
+            }
+        }
+
+        function quickApprove(id) {
+            const b = bookings.find(item => item.id === id);
+            if (b) {
+                b.status = 'approved';
+                refreshAll();
+            }
+        }
+
+        function rejectCurrentBooking() {
+            if (!activeDetailBookingId) return;
+            const b = bookings.find(item => item.id === activeDetailBookingId);
+            if (b) {
+                b.status = 'rejected';
+                closeDetailModal();
+                refreshAll();
+            }
+        }
+
+        // Add Lab Modal (Admin)
+        function openLabModal() {
+            document.getElementById('lab-modal').classList.remove('hidden');
+            document.getElementById('lab-form').reset();
+        }
+
+        function closeLabModal() {
+            document.getElementById('lab-modal').classList.add('hidden');
+        }
+
+        function handleLabSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('lab-name').value;
+            const location = document.getElementById('lab-location').value;
+            const color = document.getElementById('lab-color').value;
+
+            const newLab = {
+                id: 'l_' + Date.now(),
+                name, location, color,
+                icon: 'fa-flask'
+            };
+
+            labs.push(newLab);
+            LAB_COLORS[name] = color;
+            closeLabModal();
+            renderLabsGrid();
+
+            // Aggiorna anche i menu select
+            const selects = document.querySelectorAll('#book-lab, #calendar-lab-filter');
+            selects.forEach(sel => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                sel.appendChild(opt);
+            });
+        }
+
+        // Share & QR Code Modal
+        function openShareFormModal() {
+            document.getElementById('share-form-modal').classList.remove('hidden');
+            
+            // Genera URL pulito per form pubblico
+            let cleanUrl = window.location.href.split('?')[0];
+            if (cleanUrl.startsWith('blob:') || cleanUrl.startsWith('about:')) {
+                cleanUrl = 'https://tecnici-zaccagna.netlify.app/index.html'; // fallback pulito
+            }
+            const formUrl = cleanUrl + '?form=1';
+
+            document.getElementById('share-url-input').value = formUrl;
+            
+            // Email share link
+            const emailLink = document.getElementById('email-share-link');
+            emailLink.href = `mailto:?subject=${encodeURIComponent('Modulo Prenotazione Laboratori - Tecnici Zaccagna')}&body=${encodeURIComponent('Gentili docenti, potete effettuare le prenotazioni dei laboratori tramite il seguente modulo online:\n\n' + formUrl)}`;
+
+            // Render QR Code
+            const qrContainer = document.getElementById('qrcode-container');
+            qrContainer.innerHTML = '';
+            
+            if (typeof QRCode !== 'undefined') {
+                qrcodeInstance = new QRCode(qrContainer, {
+                    text: formUrl,
+                    width: 180,
+                    height: 180,
+                    colorDark: "#1e1b4b",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } else {
+                qrContainer.innerHTML = '<span class="text-xs text-rose-600">Libreria QR non caricata</span>';
+            }
+        }
+
+        function closeShareFormModal() {
+            document.getElementById('share-form-modal').classList.add('hidden');
+        }
+
+        function copyShareUrl() {
+            const input = document.getElementById('share-url-input');
+            input.select();
+            input.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                alert('URL del modulo copiato negli appunti!');
+            } catch (err) {
+                alert('Impossibile copiare automaticamente.');
+            }
+        }
+    </script>
+</body>
+</html>
