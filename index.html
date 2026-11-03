@@ -1002,32 +1002,29 @@
                 return;
             }
 
-            const subject = encodeURIComponent(`Esito Prenotazione Laboratorio - ${statusType}`);
-            let bodyText = `Gentile ${booking.teacher},\n\nLa Sua richiesta di prenotazione per la risorsa "${booking.lab}" in data ${booking.date} (${booking.startTime}-${booking.endTime}) per la classe ${booking.schoolClass} è stata ${statusType}.\n\nCordiali saluti,\nUfficio Tecnico Zaccagna`;
+            const techEmail = "tecnici.zaccagna@gmail.com";
+            const subjectText = `Esito Prenotazione Laboratorio Zaccagna - ${statusType}`;
+            const bodyText = `Gentile ${booking.teacher},\n\nLa Sua richiesta di prenotazione per la risorsa "${booking.lab}" in data ${booking.date} (${booking.startTime}-${booking.endTime}) per la classe ${booking.schoolClass} è stata ${statusType}.\n\nNote/Dettagli: ${booking.notes || 'Nessuna'}\n\nCordiali saluti,\nUfficio Tecnico Zaccagna (${techEmail})`;
             
-            const mailtoUrl = `mailto:${booking.teacherEmail}?subject=${subject}&body=${encodeURIComponent(bodyText)}`;
-            
-            if (confirm(`Stato aggiornato a ${statusType}.\nVuoi aprire l'email per inviare la notifica a ${booking.teacherEmail}?`)) {
-                window.location.href = mailtoUrl;
-            }
-        }
+            // Link per l'apertura diretta dell'interfaccia di composizione di Gmail Web
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(booking.teacherEmail)}&su=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`;
+            const mailtoUrl = `mailto:${booking.teacherEmail}?subject=${encodeURIComponent(subjectText)}&body=${encodeURIComponent(bodyText)}`;
 
-        function quickApprove(id) {
-            if (currentRole !== 'tecnico') return;
-            const b = bookings.find(item => item.id === id);
-            if (b) {
-                b.status = 'approved';
-                refreshAll();
-            }
-        }
+            const choice = confirm(
+                `Stato prenotazione aggiornato a: ${statusType}\n\n` +
+                `Destinatario: ${booking.teacherEmail}\n` +
+                `Mittente Ufficiale: ${techEmail}\n\n` +
+                `Premendo OK si aprirà Gmail Web per inviare la conferma dal tuo account tecnici.zaccagna@gmail.com.`
+            );
 
-        function rejectCurrentBooking() {
-            if (!activeDetailBookingId || currentRole !== 'tecnico') return;
-            const b = bookings.find(item => item.id === activeDetailBookingId);
-            if (b) {
-                b.status = 'rejected';
-                closeDetailModal();
-                refreshAll();
+            if (choice) {
+                // Tenta l'apertura diretta di Gmail Web (ideale per browser)
+                const gmailWin = window.open(gmailUrl, '_blank');
+                
+                // Backup con client locale se la finestra viene bloccata dai popup
+                if (!gmailWin || gmailWin.closed || typeof gmailWin.closed == 'undefined') {
+                    window.open(mailtoUrl, '_self');
+                }
             }
         }
 
