@@ -232,13 +232,15 @@
             <div class="bg-indigo-900 text-white px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between shrink-0">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-calendar-plus text-indigo-300"></i>
-                    <h3 class="font-bold text-sm sm:text-base leading-tight">Prenota Laboratorio / Materiale</h3>
+                    <h3 id="booking-modal-title" class="font-bold text-sm sm:text-base leading-tight">Prenota Laboratorio / Materiale</h3>
                 </div>
                 <button onclick="closeBookingModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
             <form id="booking-form" onsubmit="handleBookingSubmit(event)" class="p-4 sm:p-6 space-y-3 sm:space-y-4 overflow-y-auto flex-1">
+                <input type="hidden" id="edit-booking-id" value="">
+                
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Docente Richiedente *</label>
@@ -313,7 +315,7 @@
 
                 <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100 shrink-0">
                     <button type="button" onclick="closeBookingModal()" class="px-4 py-2 text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">Annulla</button>
-                    <button type="submit" class="px-5 py-2 text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow">Invia Richiesta</button>
+                    <button type="submit" id="booking-submit-btn" class="px-5 py-2 text-xs sm:text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow">Invia Richiesta</button>
                 </div>
             </form>
         </div>
@@ -382,6 +384,10 @@
                         <span id="detail-teacher" class="font-medium text-slate-800"></span>
                     </div>
                     <div class="flex justify-between">
+                        <span class="text-xs font-semibold text-slate-500 uppercase">Email:</span>
+                        <span id="detail-email" class="font-medium text-slate-800 text-xs"></span>
+                    </div>
+                    <div class="flex justify-between">
                         <span class="text-xs font-semibold text-slate-500 uppercase">Materia:</span>
                         <span id="detail-subject" class="font-medium text-slate-800"></span>
                     </div>
@@ -406,9 +412,25 @@
                     <span class="block text-xs font-semibold text-slate-500 uppercase mb-1">Note e Richieste:</span>
                     <p id="detail-notes" class="text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200 italic min-h-[40px]"></p>
                 </div>
-                <div id="technician-actions" class="hidden pt-3 border-t border-slate-100 flex space-x-2">
-                    <button onclick="approveCurrentBooking()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow">Approva</button>
-                    <button onclick="rejectCurrentBooking()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow">Rifiuta</button>
+                
+                <!-- Azioni Riservate al Tecnico / Admin -->
+                <div id="technician-actions" class="hidden pt-3 border-t border-slate-100 space-y-2">
+                    <div id="approval-buttons" class="flex space-x-2">
+                        <button onclick="approveCurrentBooking()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center">
+                            <i class="fa-solid fa-check mr-1.5"></i> Approva
+                        </button>
+                        <button onclick="rejectCurrentBooking()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center">
+                            <i class="fa-solid fa-xmark mr-1.5"></i> Rifiuta
+                        </button>
+                    </div>
+                    <div class="flex space-x-2 pt-1">
+                        <button onclick="editCurrentBooking()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center">
+                            <i class="fa-solid fa-pen-to-square mr-1.5"></i> Modifica Prenotazione
+                        </button>
+                        <button onclick="deleteCurrentBooking()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center">
+                            <i class="fa-solid fa-trash-can mr-1.5"></i> Elimina
+                        </button>
+                    </div>
                 </div>
                 <div class="pt-2 flex justify-end">
                     <button onclick="closeDetailModal()" class="px-4 py-2 text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition">Chiudi</button>
@@ -456,7 +478,7 @@
         // Password di protezione per ruolo Tecnico / Admin
         const TECH_PASSWORD = "610106";
 
-        // URL Google Apps Script fornito dall'utente per invio email automatico
+        // URL Google Apps Script per invio email automatico
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwzdpBuzAfvKmyFjAtqobNUq5jvqp6jNqPFsU7VAxqKu7dDvt11sXVXedsoVfVKWC_mg/exec";
 
         // Global State & Mappings
@@ -490,13 +512,7 @@
             { id: 'l8', name: 'Materiale Topografia', location: 'Magazzino Strumenti', color: '#0891b2', icon: 'fa-toolbox' }
         ];
 
-        function formatDate(offsetDays) {
-            const d = new Date();
-            d.setDate(d.getDate() + offsetDays);
-            return d.toISOString().split('T')[0];
-        }
-
-        // Clean initial state (prenotazioni di prova rimosse)
+        // ELIMINATE TUTTE LE PRENOTAZIONI DI PROVA: L'array riparte completamente vuoto.
         let bookings = [];
 
         // Initialization
@@ -517,10 +533,10 @@
                 const btn = document.getElementById(`tab-${t}`);
                 if (t === tab) {
                     el.classList.remove('hidden');
-                    btn.className = "pb-3 text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 flex items-center space-x-2";
+                    btn.className = "pb-3 text-xs sm:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 flex items-center space-x-2 shrink-0";
                 } else {
                     el.classList.add('hidden');
-                    btn.className = "pb-3 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center space-x-2";
+                    btn.className = "pb-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center space-x-2 shrink-0";
                 }
             });
             if (tab === 'calendar' && calendar) {
@@ -600,7 +616,11 @@
                 },
                 events: prepareCalendarEvents(),
                 eventClick: function(info) {
-                    openDetailModal(info.event.id);
+                    if (!info.event.id.startsWith('fixed-')) {
+                        openDetailModal(info.event.id);
+                    } else {
+                        alert("Questa fascia oraria fa parte dell'occupazione fissa scolastica e non può essere modificata o cancellata.");
+                    }
                 },
                 dateClick: function(info) {
                     if (info.dateStr > '2027-06-10') {
@@ -636,6 +656,7 @@
                 };
             });
 
+            // Mantiene intatte le ore fisse scolastiche ricorrenti non prenotabili
             const recurringEvents = getRecurringFixedEvents();
             recurringEvents.forEach(re => {
                 if (selectedLabFilter === 'ALL' || selectedLabFilter === re.lab) {
@@ -718,6 +739,9 @@
         function openBookingModal() {
             document.getElementById('booking-modal').classList.remove('hidden');
             document.getElementById('booking-form').reset();
+            document.getElementById('edit-booking-id').value = '';
+            document.getElementById('booking-modal-title').textContent = 'Prenota Laboratorio / Materiale';
+            document.getElementById('booking-submit-btn').textContent = 'Invia Richiesta';
             document.getElementById('notebook-count-container').classList.add('hidden');
             document.getElementById('topo-material-container').classList.add('hidden');
         }
@@ -756,6 +780,7 @@
 
         function handleBookingSubmit(e) {
             e.preventDefault();
+            const editId = document.getElementById('edit-booking-id').value;
             const teacher = document.getElementById('book-teacher').value;
             const teacherEmail = document.getElementById('book-email').value;
             const subject = document.getElementById('book-subject').value;
@@ -777,7 +802,7 @@
                 return;
             }
 
-            const existingConflict = bookings.find(b => b.lab === lab && b.date === date && b.slotType === slotType && b.status !== 'rejected');
+            const existingConflict = bookings.find(b => b.lab === lab && b.date === date && b.slotType === slotType && b.status !== 'rejected' && b.id !== editId);
             if (existingConflict) {
                 alert(`Attenzione: Esiste già una prenotazione confermata o in attesa per "${lab}" in questa data e fascia oraria.`);
                 return;
@@ -792,23 +817,43 @@
             else if (slotType === '6') { startTime = '13:00'; endTime = '14:00'; }
             else if (slotType === 'full') { startTime = '08:00'; endTime = '14:00'; }
 
-            const bookingStatus = currentRole === 'tecnico' ? 'approved' : 'pending';
+            if (editId) {
+                const b = bookings.find(item => item.id === editId);
+                if (b) {
+                    b.teacher = teacher;
+                    b.teacherEmail = teacherEmail;
+                    b.subject = subject;
+                    b.lab = lab;
+                    b.schoolClass = schoolClass;
+                    b.date = date;
+                    b.slotType = slotType;
+                    b.startTime = startTime;
+                    b.endTime = endTime;
+                    b.notes = notes;
+                    b.notebookQty = notebookQty;
+                    b.topoMaterial = topoMaterial;
+                    
+                    alert(`Prenotazione di ${teacher} aggiornata con successo!`);
+                    sendNotificationEmail(b, 'MODIFICATA DALL\'UFFICIO TECNICO');
+                }
+            } else {
+                const bookingStatus = currentRole === 'tecnico' ? 'approved' : 'pending';
+                const newBooking = {
+                    id: 'b_' + Date.now(),
+                    lab, teacher, teacherEmail, subject, schoolClass, date, slotType, startTime, endTime, notebookQty, topoMaterial, notes,
+                    status: bookingStatus
+                };
+                bookings.push(newBooking);
 
-            const newBooking = {
-                id: 'b_' + Date.now(),
-                lab, teacher, teacherEmail, subject, schoolClass, date, slotType, startTime, endTime, notebookQty, topoMaterial, notes,
-                status: bookingStatus
-            };
+                if (currentRole === 'docente') {
+                    alert(`Richiesta inoltrata con successo! La prenotazione per "${lab}" è in stato "In Attesa" di approvazione da parte dei tecnici.`);
+                } else {
+                    alert(`Prenotazione per "${lab}" registrata e approvata con successo!`);
+                }
+            }
 
-            bookings.push(newBooking);
             closeBookingModal();
             refreshAll();
-
-            if (currentRole === 'docente') {
-                alert(`Richiesta inoltrata con successo! La prenotazione per "${lab}" è in stato "In Attesa" di approvazione da parte dei tecnici.`);
-            } else {
-                alert(`Prenotazione per "${lab}" registrata e approvata con successo!`);
-            }
         }
 
         function refreshAll() {
@@ -859,7 +904,7 @@
             const activeBookings = bookings;
 
             if (activeBookings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 text-xs">Nessuna prenotazione registrata.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 text-xs">Nessuna prenotazione inserita. Il sistema è pronto per le nuove richieste.</td></tr>`;
                 return;
             }
 
@@ -882,10 +927,11 @@
                         <td class="p-3.5 text-slate-700">${b.teacher}<br><span class="text-xs text-slate-500">${b.schoolClass}</span></td>
                         <td class="p-3.5 text-slate-600">${b.subject}${extraText}</td>
                         <td class="p-3.5">${badge}</td>
-                        <td class="p-3.5 text-right space-x-2">
-                            <button onclick="openDetailModal('${b.id}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition">Dettagli</button>
-                            ${currentRole === 'tecnico' && b.status === 'pending' ? `
-                                <button onclick="quickApprove('${b.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold transition">Approva</button>
+                        <td class="p-3.5 text-right space-x-1.5">
+                            <button onclick="openDetailModal('${b.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition">Dettagli</button>
+                            ${currentRole === 'tecnico' ? `
+                                <button onclick="quickEdit('${b.id}')" title="Modifica" class="px-2 py-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="quickDelete('${b.id}')" title="Cancella" class="px-2 py-1 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-trash"></i></button>
                             ` : ''}
                         </td>
                     </tr>
@@ -914,6 +960,7 @@
 
             document.getElementById('detail-lab').textContent = b.lab;
             document.getElementById('detail-teacher').textContent = b.teacher;
+            document.getElementById('detail-email').textContent = b.teacherEmail || 'Non specificata';
             document.getElementById('detail-subject').textContent = b.subject;
             document.getElementById('detail-class').textContent = b.schoolClass;
             document.getElementById('detail-datetime').textContent = `${b.date} (${b.startTime} - ${b.endTime})`;
@@ -944,8 +991,15 @@
             }
 
             const techActions = document.getElementById('technician-actions');
-            if (currentRole === 'tecnico' && b.status === 'pending') {
+            const approvalBtns = document.getElementById('approval-buttons');
+
+            if (currentRole === 'tecnico') {
                 techActions.classList.remove('hidden');
+                if (b.status === 'pending') {
+                    approvalBtns.classList.remove('hidden');
+                } else {
+                    approvalBtns.classList.add('hidden');
+                }
             } else {
                 techActions.classList.add('hidden');
             }
@@ -969,16 +1023,6 @@
             }
         }
 
-        function quickApprove(id) {
-            if (currentRole !== 'tecnico') return;
-            const b = bookings.find(item => item.id === id);
-            if (b) {
-                b.status = 'approved';
-                refreshAll();
-                sendNotificationEmail(b, 'APPROVATA');
-            }
-        }
-
         function rejectCurrentBooking() {
             if (!activeDetailBookingId || currentRole !== 'tecnico') return;
             const b = bookings.find(item => item.id === activeDetailBookingId);
@@ -990,7 +1034,58 @@
             }
         }
 
-        // Funzione di Invio Automatico via Google Apps Script (Zero Pop-up, Automatico da tecnici.zaccagna@gmail.com)
+        function editCurrentBooking() {
+            if (!activeDetailBookingId || currentRole !== 'tecnico') return;
+            const idToEdit = activeDetailBookingId;
+            closeDetailModal();
+            quickEdit(idToEdit);
+        }
+
+        function quickEdit(id) {
+            if (currentRole !== 'tecnico') return;
+            const b = bookings.find(item => item.id === id);
+            if (!b) return;
+
+            openBookingModal();
+            document.getElementById('edit-booking-id').value = b.id;
+            document.getElementById('booking-modal-title').textContent = 'Modifica Prenotazione (Tecnico / Admin)';
+            document.getElementById('booking-submit-btn').textContent = 'Salva Modifiche';
+
+            document.getElementById('book-teacher').value = b.teacher;
+            document.getElementById('book-email').value = b.teacherEmail || '';
+            document.getElementById('book-subject').value = b.subject;
+            document.getElementById('book-lab').value = b.lab;
+            document.getElementById('book-class').value = b.schoolClass;
+            document.getElementById('book-date').value = b.date;
+            document.getElementById('book-slot-type').value = b.slotType || '1';
+            document.getElementById('book-notes').value = b.notes || '';
+
+            handleLabChange();
+            if (b.notebookQty) document.getElementById('book-notebook-qty').value = b.notebookQty;
+            if (b.topoMaterial) document.getElementById('book-topo-material').value = b.topoMaterial;
+        }
+
+        function deleteCurrentBooking() {
+            if (!activeDetailBookingId || currentRole !== 'tecnico') return;
+            const idToDelete = activeDetailBookingId;
+            closeDetailModal();
+            quickDelete(idToDelete);
+        }
+
+        function quickDelete(id) {
+            if (currentRole !== 'tecnico') return;
+            const b = bookings.find(item => item.id === id);
+            if (!b) return;
+
+            if (confirm(`Sei sicuro di voler CANCELLARE la prenotazione di ${b.teacher} per il giorno ${b.date}?`)) {
+                bookings = bookings.filter(item => item.id !== id);
+                refreshAll();
+                sendNotificationEmail(b, 'CANCELLATA DALL\'UFFICIO TECNICO');
+                alert("Prenotazione cancellata con successo.");
+            }
+        }
+
+        // Funzione di Invio Automatico via Google Apps Script (Zero Pop-up)
         function sendNotificationEmail(booking, statusType) {
             if (!booking.teacherEmail) {
                 alert(`Prenotazione ${statusType}, ma non è stata inserita l'email del docente per la notifica.`);
@@ -1000,7 +1095,6 @@
             const subjectText = `Esito Prenotazione Laboratorio Zaccagna - ${statusType}`;
             const bodyText = `Gentile ${booking.teacher},\n\nLa Sua richiesta di prenotazione per la risorsa "${booking.lab}" in data ${booking.date} (${booking.startTime}-${booking.endTime}) per la classe ${booking.schoolClass} è stata ${statusType}.\n\nNote/Dettagli: ${booking.notes || 'Nessuna'}\n\nCordiali saluti,\nUfficio Tecnico Zaccagna (tecnici.zaccagna@gmail.com)`;
 
-            // Invio tramite Google Apps Script API
             fetch(GOOGLE_SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors",
@@ -1013,7 +1107,7 @@
                     body: bodyText
                 })
             }).then(() => {
-                alert(`Notifica inviata con successo via e-mail al docente (${booking.teacherEmail}) tramite l'account ufficiali tecnici.zaccagna@gmail.com!`);
+                alert(`Notifica inviata con successo via e-mail al docente (${booking.teacherEmail}) tramite l'account ufficiale tecnici.zaccagna@gmail.com!`);
             }).catch(err => {
                 console.error(err);
                 alert("Errore durante l'invio dell'e-mail.");
