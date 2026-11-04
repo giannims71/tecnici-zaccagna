@@ -32,6 +32,47 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        
+        /* FullCalendar Custom Contrast Styling */
+        .fc-toolbar-title {
+            color: #0f172a !important;
+            font-weight: 700 !important;
+            font-size: 1.25rem !important;
+        }
+        .fc-button {
+            background-color: #4f46e5 !important;
+            border-color: #4338ca !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            text-transform: capitalize !important;
+            opacity: 1 !important;
+        }
+        .fc-button:hover {
+            background-color: #4338ca !important;
+        }
+        .fc-button-active {
+            background-color: #312e81 !important;
+            border-color: #312e81 !important;
+        }
+        .fc-col-header-cell-cushion {
+            color: #334155 !important;
+            font-weight: 600 !important;
+            padding: 8px 0 !important;
+        }
+        .fc-daygrid-day-number {
+            color: #1e293b !important;
+            font-weight: 600 !important;
+            padding: 4px 8px !important;
+        }
+        .fc-theme-standard td, .fc-theme-standard th {
+            border-color: #e2e8f0 !important;
+        }
+        .fc-event {
+            border-radius: 4px !important;
+            padding: 2px 4px !important;
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
+        }
     </style>
 </head>
 <body class="h-full bg-slate-50 text-slate-800 flex flex-col antialiased">
@@ -165,7 +206,7 @@
                         <span>In Attesa</span>
                     </div>
                     <div class="flex items-center space-x-1.5">
-                        <span class="w-3 h-3 rounded-full bg-indigo-600 inline-block"></span>
+                        <span class="w-3 h-3 rounded-full bg-purple-600 inline-block"></span>
                         <span>Fisso Orario</span>
                     </div>
                 </div>
@@ -512,17 +553,32 @@
             { id: 'l8', name: 'Materiale Topografia', location: 'Magazzino Strumenti', color: '#0891b2', icon: 'fa-toolbox' }
         ];
 
-        // ELIMINATE TUTTE LE PRENOTAZIONI DI PROVA: L'array riparte completamente vuoto.
         let bookings = [];
+
+        // Helper per formattare la data locale YYYY-MM-DD in modo sicuro senza sfasamenti UTC
+        function getLocalDateString(year, month, day) {
+            const m = String(month).padStart(2, '0');
+            const d = String(day).padStart(2, '0');
+            return `${year}-${m}-${d}`;
+        }
+
+        // Helper per convertire data YYYY-MM-DD in Date Locale per evitare sfasamenti del giorno
+        function parseLocalDate(dateStr) {
+            const parts = dateStr.split('-');
+            return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+        }
 
         // Initialization
         document.addEventListener('DOMContentLoaded', function() {
-            initCalendar();
             renderLabsGrid();
             renderPendingTable();
             renderAllBookingsTable();
             updateStats();
             applyRoleUI();
+            
+            setTimeout(function() {
+                initCalendar();
+            }, 100);
         });
 
         // Switch Tabs
@@ -540,7 +596,9 @@
                 }
             });
             if (tab === 'calendar' && calendar) {
-                setTimeout(() => calendar.updateSize(), 150);
+                setTimeout(() => {
+                    calendar.updateSize();
+                }, 100);
             }
         }
 
@@ -656,7 +714,7 @@
                 };
             });
 
-            // Mantiene intatte le ore fisse scolastiche ricorrenti non prenotabili
+            // Aggiunta delle ore fisse scolastiche
             const recurringEvents = getRecurringFixedEvents();
             recurringEvents.forEach(re => {
                 if (selectedLabFilter === 'ALL' || selectedLabFilter === re.lab) {
@@ -669,62 +727,82 @@
 
         function getRecurringFixedEvents() {
             let events = [];
-            let startDate = new Date('2026-01-01');
-            let endDate = new Date('2027-06-10');
+            let start = new Date(2026, 0, 1);
+            let end = new Date(2027, 5, 10);
 
-            let curr = new Date(startDate);
-            while (curr <= endDate) {
-                let dayOfWeek = curr.getDay();
-                let dateStr = curr.toISOString().split('T')[0];
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                let dayOfWeek = d.getDay(); // 0 = Dom, 1 = Lun, 2 = Mar, 3 = Mer, 4 = Gio, 5 = Ven, 6 = Sab
+                let dateStr = getLocalDateString(d.getFullYear(), d.getMonth() + 1, d.getDate());
 
-                // --- TOPOGRAFIA (P1) ---
+                // --- TOPOGRAFIA (P1) - Gestione ora per ora ---
+                // Lunedì (1): 1ª, 2ª, 3ª, 4ª ora
                 if (dayOfWeek === 1) {
-                    events.push({ id: `fixed-topo-${dateStr}-1`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (1ª-4ª)', start: `${dateStr}T08:00`, end: `${dateStr}T12:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-1a`, lab: 'Topografia (P1)', title: '🔒 Topografia - 1ª ora', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-1b`, lab: 'Topografia (P1)', title: '🔒 Topografia - 2ª ora', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-1c`, lab: 'Topografia (P1)', title: '🔒 Topografia - 3ª ora', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-1d`, lab: 'Topografia (P1)', title: '🔒 Topografia - 4ª ora', start: `${dateStr}T11:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
+                // Martedì (2): 1ª, 2ª, 3ª ora e 5ª, 6ª ora (4ª ora LIBERA)
                 if (dayOfWeek === 2) {
-                    events.push({ id: `fixed-topo-${dateStr}-2a`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (1ª-3ª)', start: `${dateStr}T08:00`, end: `${dateStr}T11:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
-                    events.push({ id: `fixed-topo-${dateStr}-2b`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (5ª-6ª)', start: `${dateStr}T12:00`, end: `${dateStr}T14:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-2a`, lab: 'Topografia (P1)', title: '🔒 Topografia - 1ª ora', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-2b`, lab: 'Topografia (P1)', title: '🔒 Topografia - 2ª ora', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-2c`, lab: 'Topografia (P1)', title: '🔒 Topografia - 3ª ora', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    // 4ª ora (11:00-12:00) LIBERA
+                    events.push({ id: `fixed-topo-${dateStr}-2e`, lab: 'Topografia (P1)', title: '🔒 Topografia - 5ª ora', start: `${dateStr}T12:00:00`, end: `${dateStr}T13:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-2f`, lab: 'Topografia (P1)', title: '🔒 Topografia - 6ª ora', start: `${dateStr}T13:00:00`, end: `${dateStr}T14:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
+                // Mercoledì (3): 1ª, 2ª, 3ª, 4ª ora
                 if (dayOfWeek === 3) {
-                    events.push({ id: `fixed-topo-${dateStr}-3`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (2ª-5ª)', start: `${dateStr}T09:00`, end: `${dateStr}T13:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-3a`, lab: 'Topografia (P1)', title: '🔒 Topografia - 1ª ora', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-3b`, lab: 'Topografia (P1)', title: '🔒 Topografia - 2ª ora', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-3c`, lab: 'Topografia (P1)', title: '🔒 Topografia - 3ª ora', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-3d`, lab: 'Topografia (P1)', title: '🔒 Topografia - 4ª ora', start: `${dateStr}T11:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
+                // Giovedì (4): 2ª, 3ª, 4ª, 5ª, 6ª ora (1ª ora LIBERA)
                 if (dayOfWeek === 4) {
-                    events.push({ id: `fixed-topo-${dateStr}-4`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (2ª-6ª)', start: `${dateStr}T09:00`, end: `${dateStr}T14:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    // 1ª ora (08:00-09:00) LIBERA
+                    events.push({ id: `fixed-topo-${dateStr}-4b`, lab: 'Topografia (P1)', title: '🔒 Topografia - 2ª ora', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-4c`, lab: 'Topografia (P1)', title: '🔒 Topografia - 3ª ora', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-4d`, lab: 'Topografia (P1)', title: '🔒 Topografia - 4ª ora', start: `${dateStr}T11:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-4e`, lab: 'Topografia (P1)', title: '🔒 Topografia - 5ª ora', start: `${dateStr}T12:00:00`, end: `${dateStr}T13:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-4f`, lab: 'Topografia (P1)', title: '🔒 Topografia - 6ª ora', start: `${dateStr}T13:00:00`, end: `${dateStr}T14:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
+                // Venerdì (5): COMPLETAMENTE LIBERO
+                // Sabato (6): 1ª, 2ª, 3ª ora
                 if (dayOfWeek === 6) {
-                    events.push({ id: `fixed-topo-${dateStr}-6`, lab: 'Topografia (P1)', title: '🔒 Topografia - Fisso (1ª-3ª)', start: `${dateStr}T08:00`, end: `${dateStr}T11:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-6a`, lab: 'Topografia (P1)', title: '🔒 Topografia - 1ª ora', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-6b`, lab: 'Topografia (P1)', title: '🔒 Topografia - 2ª ora', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-topo-${dateStr}-6c`, lab: 'Topografia (P1)', title: '🔒 Topografia - 3ª ora', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                 }
 
                 // --- INFORMATICA (P2) ---
                 if (dayOfWeek === 1) {
-                    events.push({ id: `fixed-info-${dateStr}-1`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (1ª-2ª)', start: `${dateStr}T08:00`, end: `${dateStr}T10:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                    events.push({ id: `fixed-info-${dateStr}-1`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (1ª-2ª)', start: `${dateStr}T08:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
                 }
                 if (dayOfWeek === 2) {
-                    events.push({ id: `fixed-info-${dateStr}-2`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (5ª-6ª)', start: `${dateStr}T12:00`, end: `${dateStr}T14:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                    events.push({ id: `fixed-info-${dateStr}-2`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (5ª-6ª)', start: `${dateStr}T12:00:00`, end: `${dateStr}T14:00:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
                 }
                 if (dayOfWeek === 3) {
-                    events.push({ id: `fixed-info-${dateStr}-3`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (5ª)', start: `${dateStr}T12:00`, end: `${dateStr}T13:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                    events.push({ id: `fixed-info-${dateStr}-3`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (5ª)', start: `${dateStr}T12:00:00`, end: `${dateStr}T13:00:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
                 }
 
                 // --- STAMPA 3D (P1) ---
-                if (dayOfWeek === 1) {
-                    events.push({ id: `fixed-3d-${dateStr}-1`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (3ª-4ª)', start: `${dateStr}T10:00`, end: `${dateStr}T12:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
+                if (dayOfWeek === 1) { // Lunedì: 3ª e 4ª ora (10:00 - 12:00)
+                    events.push({ id: `fixed-3d-${dateStr}-1`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (3ª-4ª)', start: `${dateStr}T10:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                 }
-                if (dayOfWeek === 2) {
-                    events.push({ id: `fixed-3d-${dateStr}-2`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (4ª)', start: `${dateStr}T11:00`, end: `${dateStr}T12:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
+                if (dayOfWeek === 2) { // Martedì: 4ª ora (11:00 - 12:00)
+                    events.push({ id: `fixed-3d-${dateStr}-2`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (4ª)', start: `${dateStr}T11:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                 }
-                if (dayOfWeek === 3) {
-                    events.push({ id: `fixed-3d-${dateStr}-3`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (2ª)', start: `${dateStr}T09:00`, end: `${dateStr}T10:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
+                if (dayOfWeek === 3) { // Mercoledì: 2ª ora (9:00 - 10:00)
+                    events.push({ id: `fixed-3d-${dateStr}-3`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (2ª)', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                 }
-                if (dayOfWeek === 4) {
-                    events.push({ id: `fixed-3d-${dateStr}-4`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (1ª)', start: `${dateStr}T08:00`, end: `${dateStr}T09:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
+                if (dayOfWeek === 4) { // Giovedì: 1ª ora (8:00 - 9:00)
+                    events.push({ id: `fixed-3d-${dateStr}-4`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (1ª)', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                 }
-                if (dayOfWeek === 6) {
-                    events.push({ id: `fixed-3d-${dateStr}-6a`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (3ª)', start: `${dateStr}T10:00`, end: `${dateStr}T11:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
-                    events.push({ id: `fixed-3d-${dateStr}-6b`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (5ª)', start: `${dateStr}T12:00`, end: `${dateStr}T13:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
+                if (dayOfWeek === 6) { // Sabato: 3ª ora (10:00 - 11:00) e 5ª ora (12:00 - 13:00)
+                    events.push({ id: `fixed-3d-${dateStr}-6a`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (3ª)', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
+                    events.push({ id: `fixed-3d-${dateStr}-6b`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (5ª)', start: `${dateStr}T12:00:00`, end: `${dateStr}T13:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                 }
-
-                curr.setDate(curr.getDate() + 1);
             }
             return events;
         }
@@ -738,23 +816,31 @@
         }
 
         function isFixedConflict(lab, dateStr, slotType) {
-            const dateObj = new Date(dateStr);
-            const dayOfWeek = dateObj.getDay();
+            const dateObj = parseLocalDate(dateStr);
+            const dayOfWeek = dateObj.getDay(); // 0 = Domenica, 1 = Lunedì, 2 = Martedì, 3 = Mercoledì, 4 = Giovedì, 5 = Venerdì, 6 = Sabato
 
             if (lab === 'Topografia (P1)') {
+                // Lunedì (1): 1ª, 2ª, 3ª, 4ª ora occupate
                 if (dayOfWeek === 1 && ['1', '2', '3', '4'].includes(slotType)) return true;
+                // Martedì (2): 1ª, 2ª, 3ª ora e 5ª, 6ª ora occupate (libera 4ª ora)
                 if (dayOfWeek === 2 && ['1', '2', '3', '5', '6'].includes(slotType)) return true;
-                if (dayOfWeek === 3 && ['2', '3', '4', '5'].includes(slotType)) return true;
+                // Mercoledì (3): 1ª, 2ª, 3ª, 4ª ora occupate
+                if (dayOfWeek === 3 && ['1', '2', '3', '4'].includes(slotType)) return true;
+                // Giovedì (4): 2ª, 3ª, 4ª, 5ª, 6ª ora occupate (prenotabile 1ª ora)
                 if (dayOfWeek === 4 && ['2', '3', '4', '5', '6'].includes(slotType)) return true;
+                // Venerdì (5): Libero
+                // Sabato (6): 1ª, 2ª, 3ª ora occupate
                 if (dayOfWeek === 6 && ['1', '2', '3'].includes(slotType)) return true;
-                if (slotType === 'full') return true;
+                
+                // Intera giornata bloccata se ci sono ore fisse nel giorno
+                if (slotType === 'full' && [1, 2, 3, 4, 6].includes(dayOfWeek)) return true;
             }
 
             if (lab === 'Informatica (P2)') {
                 if (dayOfWeek === 1 && ['1', '2'].includes(slotType)) return true;
                 if (dayOfWeek === 2 && ['5', '6'].includes(slotType)) return true;
                 if (dayOfWeek === 3 && ['5'].includes(slotType)) return true;
-                if (slotType === 'full') return true;
+                if (slotType === 'full' && [1, 2, 3].includes(dayOfWeek)) return true;
             }
 
             if (lab === 'Stampa 3D (P1)') {
@@ -763,7 +849,7 @@
                 if (dayOfWeek === 3 && ['2'].includes(slotType)) return true;
                 if (dayOfWeek === 4 && ['1'].includes(slotType)) return true;
                 if (dayOfWeek === 6 && ['3', '5'].includes(slotType)) return true;
-                if (slotType === 'full') return true;
+                if (slotType === 'full' && [1, 2, 3, 4, 6].includes(dayOfWeek)) return true;
             }
 
             return false;
@@ -1118,7 +1204,7 @@
             }
         }
 
-        // Funzione di Invio Automatico via Google Apps Script (Zero Pop-up)
+        // Funzione di Invio Automatico via Google Apps Script
         function sendNotificationEmail(booking, statusType) {
             if (!booking.teacherEmail) {
                 alert(`Prenotazione ${statusType}, ma non è stata inserita l'email del docente per la notifica.`);
