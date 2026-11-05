@@ -703,13 +703,27 @@
                 if (b.lab === 'Notebook (Uff. Tec.)') extraInfo = ` [${b.notebookQty || 8} NB]`;
                 if (b.lab === 'Materiale Topografia' && b.topoMaterial) extraInfo = ` [${b.topoMaterial}]`;
 
+                // Se il ruolo è Docente, nascondiamo i dati sensibili visualizzando solo "NON PRENOTABILE"
+                const isDocente = currentRole === 'docente';
+                const eventTitle = isDocente 
+                    ? '🔒 NON PRENOTABILE' 
+                    : `${statusIcon}${b.lab} - ${b.schoolClass}${extraInfo}`;
+
+                const bgColor = isDocente 
+                    ? '#64748b' // Grigio neutro per la modalità docente
+                    : (b.status === 'approved' ? color : '#f59e0b');
+
+                const bdColor = isDocente 
+                    ? '#475569' 
+                    : (b.status === 'approved' ? color : '#d97706');
+
                 return {
                     id: b.id,
-                    title: `${statusIcon}${b.lab} - ${b.schoolClass}${extraInfo}`,
+                    title: eventTitle,
                     start: `${b.date}T${b.startTime}`,
                     end: `${b.date}T${b.endTime}`,
-                    backgroundColor: b.status === 'approved' ? color : '#f59e0b',
-                    borderColor: b.status === 'approved' ? color : '#d97706',
+                    backgroundColor: bgColor,
+                    borderColor: bdColor,
                     textColor: '#ffffff'
                 };
             });
