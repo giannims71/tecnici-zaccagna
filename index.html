@@ -33,46 +33,14 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* FullCalendar Custom Contrast Styling */
-        .fc-toolbar-title {
-            color: #0f172a !important;
-            font-weight: 700 !important;
-            font-size: 1.25rem !important;
-        }
-        .fc-button {
-            background-color: #4f46e5 !important;
-            border-color: #4338ca !important;
-            color: #ffffff !important;
-            font-weight: 600 !important;
-            text-transform: capitalize !important;
-            opacity: 1 !important;
-        }
-        .fc-button:hover {
-            background-color: #4338ca !important;
-        }
-        .fc-button-active {
-            background-color: #312e81 !important;
-            border-color: #312e81 !important;
-        }
-        .fc-col-header-cell-cushion {
-            color: #334155 !important;
-            font-weight: 600 !important;
-            padding: 8px 0 !important;
-        }
-        .fc-daygrid-day-number {
-            color: #1e293b !important;
-            font-weight: 600 !important;
-            padding: 4px 8px !important;
-        }
-        .fc-theme-standard td, .fc-theme-standard th {
-            border-color: #e2e8f0 !important;
-        }
-        .fc-event {
-            border-radius: 4px !important;
-            padding: 2px 4px !important;
-            font-size: 0.75rem !important;
-            font-weight: 600 !important;
-        }
+        .fc-toolbar-title { color: #0f172a !important; font-weight: 700 !important; font-size: 1.25rem !important; }
+        .fc-button { background-color: #4f46e5 !important; border-color: #4338ca !important; color: #ffffff !important; font-weight: 600 !important; text-transform: capitalize !important; opacity: 1 !important; }
+        .fc-button:hover { background-color: #4338ca !important; }
+        .fc-button-active { background-color: #312e81 !important; border-color: #312e81 !important; }
+        .fc-col-header-cell-cushion { color: #334155 !important; font-weight: 600 !important; padding: 8px 0 !important; }
+        .fc-daygrid-day-number { color: #1e293b !important; font-weight: 600 !important; padding: 4px 8px !important; }
+        .fc-theme-standard td, .fc-theme-standard th { border-color: #e2e8f0 !important; }
+        .fc-event { border-radius: 4px !important; padding: 2px 4px !important; font-size: 0.75rem !important; font-weight: 600 !important; }
     </style>
 </head>
 <body class="h-full bg-slate-50 text-slate-800 flex flex-col antialiased">
@@ -113,35 +81,29 @@
         <!-- Docente Banner -->
         <div id="read-only-banner" class="bg-indigo-50 border border-indigo-200 rounded-xl p-3.5 flex items-center justify-between text-xs text-indigo-900 shadow-sm">
             <div class="flex items-center space-x-2.5">
-                <i class="fa-solid fa-paper-plane text-indigo-600 text-base"></i>
-                <span><strong>Modalità Docente:</strong> Puoi consultare l'orario delle risorse ed effettuare una nuova richiesta di prenotazione compilando l'apposita maschera. Le richieste saranno in attesa di conferma dai tecnici.</span>
+                <i class="fa-solid fa-shield-halved text-indigo-600 text-base"></i>
+                <span><strong>Modalità Docente:</strong> Per tutela della privacy, gli orari già impegnati risultano semplicemente come occupati. Puoi inviare una nuova richiesta compilando il modulo di prenotazione.</span>
             </div>
         </div>
 
         <!-- Dashboard Stats & Quick Actions -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl shrink-0">
-                    <i class="fa-solid fa-calendar-check text-xl"></i>
-                </div>
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl shrink-0"><i class="fa-solid fa-calendar-check text-xl"></i></div>
                 <div>
                     <p class="text-xs font-medium text-slate-500 uppercase">Prenotazioni Totali</p>
                     <h3 id="stat-total" class="text-2xl font-bold text-slate-800">0</h3>
                 </div>
             </div>
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                <div class="p-3 bg-amber-50 text-amber-600 rounded-xl shrink-0">
-                    <i class="fa-solid fa-clock-rotate-left text-xl"></i>
-                </div>
+                <div class="p-3 bg-amber-50 text-amber-600 rounded-xl shrink-0"><i class="fa-solid fa-clock-rotate-left text-xl"></i></div>
                 <div>
                     <p class="text-xs font-medium text-slate-500 uppercase">In Attesa</p>
                     <h3 id="stat-pending" class="text-2xl font-bold text-slate-800">0</h3>
                 </div>
             </div>
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-4">
-                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl shrink-0">
-                    <i class="fa-solid fa-circle-check text-xl"></i>
-                </div>
+                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-xl shrink-0"><i class="fa-solid fa-circle-check text-xl"></i></div>
                 <div>
                     <p class="text-xs font-medium text-slate-500 uppercase">Approvate</p>
                     <h3 id="stat-approved" class="text-2xl font-bold text-slate-800">0</h3>
@@ -149,9 +111,7 @@
             </div>
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl shrink-0">
-                        <i class="fa-solid fa-calendar-plus text-xl"></i>
-                    </div>
+                    <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl shrink-0"><i class="fa-solid fa-calendar-plus text-xl"></i></div>
                     <div>
                         <p class="text-xs font-medium text-slate-500 uppercase">Nuova Richiesta</p>
                         <p id="action-subtext" class="text-xs text-slate-600">Docente: Richiedi</p>
@@ -166,16 +126,13 @@
         <!-- Main Tab Control -->
         <div class="flex border-b border-slate-200 space-x-4 sm:space-x-6 overflow-x-auto pb-1">
             <button onclick="switchTab('calendar')" id="tab-calendar" class="pb-3 text-xs sm:text-sm font-semibold border-b-2 border-indigo-600 text-indigo-600 flex items-center space-x-2 shrink-0">
-                <i class="fa-solid fa-calendar-days"></i>
-                <span>Calendario Unificato</span>
+                <i class="fa-solid fa-calendar-days"></i><span>Calendario Unificato</span>
             </button>
             <button onclick="switchTab('dashboard')" id="tab-dashboard" class="pb-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center space-x-2 shrink-0">
-                <i class="fa-solid fa-list-check"></i>
-                <span>Gestione Prenotazioni</span>
+                <i class="fa-solid fa-list-check"></i><span>Gestione Prenotazioni</span>
             </button>
             <button onclick="switchTab('labs')" id="tab-labs" class="pb-3 text-xs sm:text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center space-x-2 shrink-0">
-                <i class="fa-solid fa-building-columns"></i>
-                <span>Laboratori & Strumenti</span>
+                <i class="fa-solid fa-building-columns"></i><span>Laboratori & Strumenti</span>
             </button>
         </div>
 
@@ -197,35 +154,22 @@
                     </select>
                 </div>
                 <div class="flex items-center space-x-4 text-xs font-medium text-slate-500">
-                    <div class="flex items-center space-x-1.5">
-                        <span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span>
-                        <span>Approvata</span>
-                    </div>
-                    <div class="flex items-center space-x-1.5">
-                        <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
-                        <span>In Attesa</span>
-                    </div>
-                    <div class="flex items-center space-x-1.5">
-                        <span class="w-3 h-3 rounded-full bg-purple-600 inline-block"></span>
-                        <span>Fisso Orario</span>
-                    </div>
+                    <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span><span>Approvata</span></div>
+                    <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span><span>In Attesa</span></div>
+                    <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded-full bg-purple-600 inline-block"></span><span>Fisso Orario</span></div>
                 </div>
             </div>
-
-            <!-- Calendar Box -->
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                 <div id="calendar" class="min-h-[650px]"></div>
             </div>
         </div>
 
-        <!-- TAB 2: DASHBOARD / BOOKINGS LIST -->
+        <!-- TAB 2: DASHBOARD -->
         <div id="view-dashboard" class="hidden space-y-4">
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <div class="p-4 border-b border-slate-200 flex items-center justify-between">
                     <h3 class="font-bold text-slate-800 text-sm">Elenco Prenotazioni e Richieste</h3>
-                    <div class="flex space-x-2">
-                        <input type="text" id="search-input" onkeyup="filterBookingsTable()" placeholder="Cerca docente o classe..." class="px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                    </div>
+                    <input type="text" id="search-input" onkeyup="filterBookingsTable()" placeholder="Cerca..." class="px-3 py-1.5 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-sm">
@@ -239,15 +183,13 @@
                                 <th class="p-3.5 font-semibold text-right">Azioni</th>
                             </tr>
                         </thead>
-                        <tbody id="bookings-table-body" class="divide-y divide-slate-100">
-                            <!-- Inserito via JS -->
-                        </tbody>
+                        <tbody id="bookings-table-body" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- TAB 3: LABS & INVENTORY -->
+        <!-- TAB 3: LABS -->
         <div id="view-labs" class="hidden space-y-4">
             <div class="flex items-center justify-between">
                 <h3 class="font-bold text-slate-800 text-sm">Laboratori e Risorse Informatiche Disponibili</h3>
@@ -255,11 +197,8 @@
                     <i class="fa-solid fa-plus mr-1"></i> Aggiungi Risorsa
                 </button>
             </div>
-            <div id="labs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <!-- Generato via JS -->
-            </div>
+            <div id="labs-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
         </div>
-
     </main>
 
     <!-- FOOTER -->
@@ -275,24 +214,20 @@
                     <i class="fa-solid fa-calendar-plus text-indigo-300"></i>
                     <h3 id="booking-modal-title" class="font-bold text-sm sm:text-base leading-tight">Prenota Laboratorio / Materiale</h3>
                 </div>
-                <button onclick="closeBookingModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+                <button onclick="closeBookingModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="booking-form" onsubmit="handleBookingSubmit(event)" class="p-4 sm:p-6 space-y-3 sm:space-y-4 overflow-y-auto flex-1">
                 <input type="hidden" id="edit-booking-id" value="">
-                
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Docente Richiedente *</label>
                         <input type="text" id="book-teacher" required placeholder="Es. Prof. Mario Rossi" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Email Docente *</label>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Email Istituzionale Docente *</label>
                         <input type="email" id="book-email" required placeholder="Es. mario.rossi@zaccagna.edu.it" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
                     </div>
                 </div>
-
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Materia / Attività *</label>
@@ -321,38 +256,36 @@
                         <input type="date" id="book-date" required max="2027-06-10" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
                     </div>
                 </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-                    <div class="sm:col-span-2">
-                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Ora Scolastica / Fascia *</label>
-                        <select id="book-slot-type" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                            <option value="1">1ª Ora (08:00 - 09:00)</option>
-                            <option value="2">2ª Ora (09:00 - 10:00)</option>
-                            <option value="3">3ª Ora (10:00 - 11:00)</option>
-                            <option value="4">4ª Ora (11:00 - 12:00)</option>
-                            <option value="5">5ª Ora (12:00 - 13:00)</option>
-                            <option value="6">6ª Ora (13:00 - 14:00)</option>
-                            <option value="full">Intera Giornata / Mattinata</option>
-                        </select>
-                    </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Ora Scolastica / Fascia *</label>
+                    <select id="book-slot-type" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <option value="1">1ª Ora (08:00 - 09:00)</option>
+                        <option value="2">2ª Ora (09:00 - 10:00)</option>
+                        <option value="3">3ª Ora (10:00 - 11:00)</option>
+                        <option value="4">4ª Ora (11:00 - 12:00)</option>
+                        <option value="5">5ª Ora (12:00 - 13:00)</option>
+                        <option value="6">6ª Ora (13:00 - 14:00)</option>
+                        <option value="full">Intera Giornata / Mattinata</option>
+                    </select>
                 </div>
-
-                <!-- Notebook Specific Quantity Container -->
                 <div id="notebook-count-container" class="hidden bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Numero Notebook Richiesti (Max 8)</label>
                     <input type="number" id="book-notebook-qty" min="1" max="8" value="8" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
-
-                <!-- Topo Material Specific Description Container -->
                 <div id="topo-material-container" class="hidden bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Specifica Strumentazione / Materiale Topografia *</label>
-                    <input type="text" id="book-topo-material" placeholder="Es. Stazione totale, stadia, rotella metrica..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    <input type="text" id="book-topo-material" placeholder="Es. Stazione totale, stadia..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
-
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Note o Esigenze Particolari</label>
-                    <textarea id="book-notes" rows="2" placeholder="Software particolari richiesti, configurazioni..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    <textarea id="book-notes" rows="2" placeholder="Software particolari richiesti..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
                 </div>
+
+                <!-- Nota Privacy GDPR -->
+                <p class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-lg border border-slate-200 leading-relaxed">
+                    <i class="fa-solid fa-lock text-slate-400 mr-1"></i>
+                    I dati inseriti sono trattati esclusivamente dall'Ufficio Tecnico dell'Istituto per la gestione interna dei laboratori scolastici ai sensi dell'informativa privacy d'Istituto (GDPR).
+                </p>
 
                 <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100 shrink-0">
                     <button type="button" onclick="closeBookingModal()" class="px-4 py-2 text-xs sm:text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">Annulla</button>
@@ -362,152 +295,82 @@
         </div>
     </div>
 
-    <!-- MODAL 2: SHARE / GOOGLE FORM QR MODAL -->
+    <!-- MODAL 2: SHARE -->
     <div id="share-form-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden border border-slate-100">
             <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-qrcode text-indigo-300"></i>
-                    <h3 class="font-bold text-base">Condividi Modulo Prenotazione</h3>
-                </div>
-                <button onclick="closeShareFormModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+                <div class="flex items-center space-x-2"><i class="fa-solid fa-qrcode text-indigo-300"></i><h3 class="font-bold text-base">Condividi Modulo Prenotazione</h3></div>
+                <button onclick="closeShareFormModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="p-6 space-y-4 text-center">
-                <p class="text-xs text-slate-600">Condividi questo QR Code o invia il link diretto ai docenti per consultare ed inviare richieste di prenotazione.</p>
-                
-                <!-- QR Code Box -->
-                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 inline-block mx-auto">
-                    <div id="qrcode-container" class="flex justify-center"></div>
-                </div>
-
+                <p class="text-xs text-slate-600">Condividi questo QR Code o invia il link diretto ai docenti.</p>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 inline-block mx-auto"><div id="qrcode-container" class="flex justify-center"></div></div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1 text-left">URL Pubblico del Modulo</label>
+                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1 text-left">URL Pubblico</label>
                     <div class="flex space-x-2">
                         <input type="text" id="share-url-input" readonly class="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-lg text-slate-600 focus:outline-none">
-                        <button onclick="copyShareUrl()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0">
-                            Copia
-                        </button>
+                        <button onclick="copyShareUrl()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold transition shrink-0">Copia</button>
                     </div>
                 </div>
-
                 <div class="pt-3 border-t border-slate-100 flex justify-between">
-                    <a id="email-share-link" href="#" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center">
-                        <i class="fa-solid fa-envelope mr-1.5"></i> Invia invito via E-mail
-                    </a>
+                    <a id="email-share-link" href="#" class="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center"><i class="fa-solid fa-envelope mr-1.5"></i> Invia invito via E-mail</a>
                     <button onclick="closeShareFormModal()" class="px-4 py-2 text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition">Chiudi</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 3: DETAIL BOOKING MODAL -->
+    <!-- MODAL 3: DETAIL -->
     <div id="detail-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl max-w-md w-full overflow-hidden border border-slate-100">
             <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-circle-info text-indigo-300"></i>
-                    <h3 class="font-bold text-base">Dettaglio Prenotazione</h3>
-                </div>
-                <button onclick="closeDetailModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+                <div class="flex items-center space-x-2"><i class="fa-solid fa-circle-info text-indigo-300"></i><h3 class="font-bold text-base">Dettaglio Prenotazione</h3></div>
+                <button onclick="closeDetailModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="p-6 space-y-4 text-sm">
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
-                    <div class="flex justify-between">
-                        <span class="text-xs font-semibold text-slate-500 uppercase">Risorsa:</span>
-                        <span id="detail-lab" class="font-bold text-slate-800"></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-xs font-semibold text-slate-500 uppercase">Docente:</span>
-                        <span id="detail-teacher" class="font-medium text-slate-800"></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-xs font-semibold text-slate-500 uppercase">Email:</span>
-                        <span id="detail-email" class="font-medium text-slate-800 text-xs"></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-xs font-semibold text-slate-500 uppercase">Materia:</span>
-                        <span id="detail-subject" class="font-medium text-slate-800"></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-xs font-semibold text-slate-500 uppercase">Classe:</span>
-                        <span id="detail-class" class="font-medium text-slate-800"></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-xs font-semibold text-slate-500 uppercase">Data & Ora:</span>
-                        <span id="detail-datetime" class="font-medium text-slate-800"></span>
-                    </div>
-                    <div id="detail-equipment-container" class="hidden flex justify-between pt-2 border-t border-slate-200">
-                        <span class="text-xs font-semibold text-indigo-600 uppercase">Materiale / Extra:</span>
-                        <span id="detail-equipment" class="font-bold text-indigo-700"></span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-xs font-semibold text-slate-500 uppercase">Stato:</span>
-                        <span id="detail-status" class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider"></span>
-                    </div>
+                    <div class="flex justify-between"><span class="text-xs font-semibold text-slate-500 uppercase">Risorsa:</span><span id="detail-lab" class="font-bold text-slate-800"></span></div>
+                    <div class="flex justify-between"><span class="text-xs font-semibold text-slate-500 uppercase">Docente:</span><span id="detail-teacher" class="font-medium text-slate-800"></span></div>
+                    <div id="detail-email-row" class="flex justify-between"><span class="text-xs font-semibold text-slate-500 uppercase">Email:</span><span id="detail-email" class="font-medium text-slate-800 text-xs"></span></div>
+                    <div class="flex justify-between"><span class="text-xs font-semibold text-slate-500 uppercase">Materia:</span><span id="detail-subject" class="font-medium text-slate-800"></span></div>
+                    <div class="flex justify-between"><span class="text-xs font-semibold text-slate-500 uppercase">Classe:</span><span id="detail-class" class="font-medium text-slate-800"></span></div>
+                    <div class="flex justify-between"><span class="text-xs font-semibold text-slate-500 uppercase">Data & Ora:</span><span id="detail-datetime" class="font-medium text-slate-800"></span></div>
+                    <div id="detail-equipment-container" class="hidden flex justify-between pt-2 border-t border-slate-200"><span class="text-xs font-semibold text-indigo-600 uppercase">Materiale:</span><span id="detail-equipment" class="font-bold text-indigo-700"></span></div>
+                    <div class="flex justify-between"><span class="text-xs font-semibold text-slate-500 uppercase">Stato:</span><span id="detail-status" class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider"></span></div>
                 </div>
-                <div>
-                    <span class="block text-xs font-semibold text-slate-500 uppercase mb-1">Note e Richieste:</span>
+                <div id="detail-notes-container">
+                    <span class="block text-xs font-semibold text-slate-500 uppercase mb-1">Note:</span>
                     <p id="detail-notes" class="text-xs text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200 italic min-h-[40px]"></p>
                 </div>
-                
-                <!-- Azioni Riservate al Tecnico / Admin -->
                 <div id="technician-actions" class="hidden pt-3 border-t border-slate-100 space-y-2">
                     <div id="approval-buttons" class="flex space-x-2">
-                        <button onclick="approveCurrentBooking()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center">
-                            <i class="fa-solid fa-check mr-1.5"></i> Approva
-                        </button>
-                        <button onclick="rejectCurrentBooking()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center">
-                            <i class="fa-solid fa-xmark mr-1.5"></i> Rifiuta
-                        </button>
+                        <button onclick="approveCurrentBooking()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center"><i class="fa-solid fa-check mr-1.5"></i> Approva</button>
+                        <button onclick="rejectCurrentBooking()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center"><i class="fa-solid fa-xmark mr-1.5"></i> Rifiuta</button>
                     </div>
                     <div class="flex space-x-2 pt-1">
-                        <button onclick="editCurrentBooking()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center">
-                            <i class="fa-solid fa-pen-to-square mr-1.5"></i> Modifica Prenotazione
-                        </button>
-                        <button onclick="deleteCurrentBooking()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center">
-                            <i class="fa-solid fa-trash-can mr-1.5"></i> Elimina
-                        </button>
+                        <button onclick="editCurrentBooking()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center"><i class="fa-solid fa-pen-to-square mr-1.5"></i> Modifica</button>
+                        <button onclick="deleteCurrentBooking()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold py-2 rounded-lg transition shadow flex items-center justify-center"><i class="fa-solid fa-trash-can mr-1.5"></i> Elimina</button>
                     </div>
                 </div>
-                <div class="pt-2 flex justify-end">
-                    <button onclick="closeDetailModal()" class="px-4 py-2 text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition">Chiudi</button>
-                </div>
+                <div class="pt-2 flex justify-end"><button onclick="closeDetailModal()" class="px-4 py-2 text-xs font-semibold bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg transition">Chiudi</button></div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL 4: ADD LAB MODAL (Admin) -->
+    <!-- MODAL 4: ADD LAB -->
     <div id="lab-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl max-w-sm w-full overflow-hidden border border-slate-100">
             <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-building-columns text-indigo-300"></i>
-                    <h3 class="font-bold text-base">Nuova Risorsa / Laboratorio</h3>
-                </div>
-                <button onclick="closeLabModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+                <div class="flex items-center space-x-2"><i class="fa-solid fa-building-columns text-indigo-300"></i><h3 class="font-bold text-base">Nuova Risorsa</h3></div>
+                <button onclick="closeLabModal()" class="text-indigo-200 hover:text-white p-1 rounded-lg"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form id="lab-form" onsubmit="handleLabSubmit(event)" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nome Risorsa *</label>
-                    <input type="text" id="lab-name" required placeholder="Es. Laboratorio Fisica" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Ubicazione *</label>
-                    <input type="text" id="lab-location" required placeholder="Es. Piano 3 (P3)" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Colore Rappresentativo *</label>
-                    <input type="color" id="lab-color" value="#059669" class="w-full h-10 px-1 py-1 border border-slate-300 rounded-lg bg-white cursor-pointer">
-                </div>
+                <div><label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nome *</label><input type="text" id="lab-name" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Ubicazione *</label><input type="text" id="lab-location" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none"></div>
+                <div><label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Colore *</label><input type="color" id="lab-color" value="#059669" class="w-full h-10 px-1 py-1 border border-slate-300 rounded-lg bg-white cursor-pointer"></div>
                 <div class="flex items-center justify-end space-x-3 pt-3 border-t border-slate-100">
-                    <button type="button" onclick="closeLabModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">Annulla</button>
-                    <button type="submit" class="px-5 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition shadow">Salva</button>
+                    <button type="button" onclick="closeLabModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg">Annulla</button>
+                    <button type="submit" class="px-5 py-2 text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow">Salva</button>
                 </div>
             </form>
         </div>
@@ -516,22 +379,14 @@
     <!-- FullCalendar JS -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
     <script>
-        // Password di protezione per ruolo Tecnico / Admin
-        const TECH_PASSWORD = "610106";
+        // Nessuna password salvata nel codice client! La verifica avviene lato server.
+        let sessionTechPassword = "";
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzwcNyQ3pPNEkDY44eka7WbLaWkgVCz-xv-nljryvKtwvlaw7lj5Sfrr2p5CAs7LCqV/exec";
 
-        // URL Google Apps Script per invio email automatico
-        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwzdpBuzAfvKmyFjAtqobNUq5jvqp6jNqPFsU7VAxqKu7dDvt11sXVXedsoVfVKWC_mg/exec";
-
-        // Global State & Mappings
         const LAB_COLORS = {
-            "Topografia (P1)": "#8b5cf6",
-            "Stampa 3D (P1)": "#06b6d4",
-            "Informatica (P2)": "#2563eb",
-            "E.Aziend / Info (P3)": "#059669",
-            "Lingue (P3)": "#d97706",
-            "Lingue (tablet P2)": "#dc2626",
-            "Notebook (Uff. Tec.)": "#4f46e5",
-            "Materiale Topografia": "#0891b2"
+            "Topografia (P1)": "#8b5cf6", "Stampa 3D (P1)": "#06b6d4", "Informatica (P2)": "#2563eb",
+            "E.Aziend / Info (P3)": "#059669", "Lingue (P3)": "#d97706", "Lingue (tablet P2)": "#dc2626",
+            "Notebook (Uff. Tec.)": "#4f46e5", "Materiale Topografia": "#0891b2"
         };
 
         let currentRole = 'docente';
@@ -539,9 +394,7 @@
         let calendar = null;
         let activeDetailBookingId = null;
         let selectedLabFilter = 'ALL';
-        let qrcodeInstance = null;
 
-        // Mock Data Storage
         let labs = [
             { id: 'l1', name: 'Topografia (P1)', location: 'Piano 1 (P1)', color: '#8b5cf6', icon: 'fa-map-location-dot' },
             { id: 'l7', name: 'Stampa 3D (P1)', location: 'Piano 1 (P1)', color: '#06b6d4', icon: 'fa-cube' },
@@ -555,33 +408,53 @@
 
         let bookings = [];
 
-        // Helper per formattare la data locale YYYY-MM-DD in modo sicuro senza sfasamenti UTC
-        function getLocalDateString(year, month, day) {
-            const m = String(month).padStart(2, '0');
-            const d = String(day).padStart(2, '0');
-            return `${year}-${m}-${d}`;
+        async function syncWithGoogle(payload) {
+            try {
+                // Allega la password di sessione se l'utente è autenticato come tecnico
+                if (currentRole === 'tecnico' && sessionTechPassword) {
+                    payload.password = sessionTechPassword;
+                }
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
+                return await response.json();
+            } catch (err) {
+                console.error("Errore sincronizzazione Google:", err);
+                return null;
+            }
         }
 
-        // Helper per convertire data YYYY-MM-DD in Date Locale per evitare sfasamenti del giorno
+        async function loadBookingsFromServer() {
+            const res = await syncWithGoogle({ action: "get" });
+            if (res && res.status === "success" && Array.isArray(res.bookings)) {
+                bookings = res.bookings;
+                refreshAll();
+            }
+        }
+
+        function getLocalDateString(year, month, day) {
+            return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        }
+
         function parseLocalDate(dateStr) {
             const parts = dateStr.split('-');
             return new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
         }
 
-        // Initialization
         document.addEventListener('DOMContentLoaded', function() {
             renderLabsGrid();
             renderPendingTable();
-            renderAllBookingsTable();
             updateStats();
             applyRoleUI();
             
             setTimeout(function() {
                 initCalendar();
+                loadBookingsFromServer();
             }, 100);
         });
 
-        // Switch Tabs
         function switchTab(tab) {
             currentTab = tab;
             ['calendar', 'dashboard', 'labs'].forEach(t => {
@@ -596,37 +469,39 @@
                 }
             });
             if (tab === 'calendar' && calendar) {
-                setTimeout(() => {
-                    calendar.updateSize();
-                }, 100);
+                setTimeout(() => { calendar.updateSize(); }, 100);
             }
         }
 
-        // Switch Role con verifica Password 610106
-        function switchRole(role) {
+        // Verifica password lato server via Apps Script
+        async function switchRole(role) {
             if (role === 'tecnico' && currentRole !== 'tecnico') {
                 const passwordInput = prompt("Inserisci la password per l'accesso Tecnico / Admin:");
-                if (passwordInput === TECH_PASSWORD) {
+                if (!passwordInput) return;
+
+                const res = await syncWithGoogle({ action: "login", password: passwordInput });
+                if (res && res.status === "success") {
                     currentRole = 'tecnico';
+                    sessionTechPassword = passwordInput;
                     alert("Accesso Tecnico effettuato con successo!");
+                    await loadBookingsFromServer(); // Ricarica i dati completi con i nomi reali
                 } else {
-                    alert("Password errata! Accesso negato.");
+                    alert("Password errata o errore di connessione! Accesso negato.");
                     return;
                 }
             } else if (role === 'docente') {
                 currentRole = 'docente';
+                sessionTechPassword = "";
+                await loadBookingsFromServer(); // Ricarica la vista anonimizzata per privacy
             }
-
             applyRoleUI();
-            renderPendingTable();
-            renderAllBookingsTable();
+            refreshAll();
         }
 
         function applyRoleUI() {
             const docBtn = document.getElementById('role-docente');
             const tecBtn = document.getElementById('role-tecnico');
             const addLabBtn = document.getElementById('add-lab-btn');
-            const mainBookBtn = document.getElementById('main-book-btn');
             const actionSubtext = document.getElementById('action-subtext');
             const readOnlyBanner = document.getElementById('read-only-banner');
 
@@ -634,55 +509,38 @@
                 docBtn.className = "px-3 py-1.5 rounded-md font-medium transition bg-indigo-600 text-white shadow";
                 tecBtn.className = "px-3 py-1.5 rounded-md font-medium transition text-indigo-300 hover:text-white";
                 addLabBtn.classList.add('hidden');
-                mainBookBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition cursor-pointer";
                 actionSubtext.textContent = "Docente: Richiedi";
                 readOnlyBanner.classList.remove('hidden');
             } else {
                 tecBtn.className = "px-3 py-1.5 rounded-md font-medium transition bg-indigo-600 text-white shadow";
                 docBtn.className = "px-3 py-1.5 rounded-md font-medium transition text-indigo-300 hover:text-white";
                 addLabBtn.classList.remove('hidden');
-                mainBookBtn.className = "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2 rounded-lg text-xs font-semibold shadow transition cursor-pointer";
                 actionSubtext.textContent = "Inserisci / Approva";
                 readOnlyBanner.classList.add('hidden');
             }
         }
 
-        function tryOpenBookingModal() {
-            openBookingModal();
-        }
+        function tryOpenBookingModal() { openBookingModal(); }
 
-        // Calendar Initialization
         function initCalendar() {
             const calendarEl = document.getElementById('calendar');
             calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 locale: 'it',
-                validRange: {
-                    start: '2026-01-01',
-                    end: '2027-06-11'
-                },
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,listWeek'
-                },
-                buttonText: {
-                    today: 'Oggi',
-                    month: 'Mese',
-                    week: 'Settimana',
-                    list: 'Lista'
-                },
+                validRange: { start: '2026-01-01', end: '2027-06-11' },
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,listWeek' },
+                buttonText: { today: 'Oggi', month: 'Mese', week: 'Settimana', list: 'Lista' },
                 events: prepareCalendarEvents(),
                 eventClick: function(info) {
                     if (!info.event.id.startsWith('fixed-')) {
                         openDetailModal(info.event.id);
                     } else {
-                        alert("Questa fascia oraria fa parte dell'occupazione fissa scolastica e non può essere modificata o cancellata.");
+                        alert("Questa fascia oraria fa parte dell'occupazione fissa scolastica e non può essere modificata.");
                     }
                 },
                 dateClick: function(info) {
                     if (info.dateStr > '2027-06-10') {
-                        alert('Il calendario delle prenotazioni è attivo solo fino al 10 Giugno 2027.');
+                        alert('Il calendario è attivo solo fino al 10 Giugno 2027.');
                         return;
                     }
                     openBookingModalWithDate(info.dateStr);
@@ -692,50 +550,28 @@
         }
 
         function prepareCalendarEvents() {
-            let filtered = selectedLabFilter === 'ALL' 
-                ? bookings 
-                : bookings.filter(b => b.lab === selectedLabFilter);
-
+            let filtered = selectedLabFilter === 'ALL' ? bookings : bookings.filter(b => b.lab === selectedLabFilter);
             let events = filtered.map(b => {
                 let color = LAB_COLORS[b.lab] || '#2563eb';
                 let statusIcon = b.status === 'approved' ? '✓ ' : b.status === 'pending' ? '⏳ ' : '✕ ';
                 let extraInfo = '';
-                if (b.lab === 'Notebook (Uff. Tec.)') extraInfo = ` [${b.notebookQty || 8} NB]`;
+                if (b.lab === 'Notebook (Uff. Tec.)' && b.notebookQty) extraInfo = ` [${b.notebookQty} NB]`;
                 if (b.lab === 'Materiale Topografia' && b.topoMaterial) extraInfo = ` [${b.topoMaterial}]`;
 
-                // Se il ruolo è Docente, nascondiamo i dati sensibili visualizzando solo "NON PRENOTABILE"
                 const isDocente = currentRole === 'docente';
-                const eventTitle = isDocente 
-                    ? '🔒 NON PRENOTABILE' 
-                    : `${statusIcon}${b.lab} - ${b.schoolClass}${extraInfo}`;
-
-                const bgColor = isDocente 
-                    ? '#64748b' // Grigio neutro per la modalità docente
-                    : (b.status === 'approved' ? color : '#f59e0b');
-
-                const bdColor = isDocente 
-                    ? '#475569' 
-                    : (b.status === 'approved' ? color : '#d97706');
+                const eventTitle = isDocente ? `🔒 ${b.lab} - Occupato` : `${statusIcon}${b.lab} - ${b.schoolClass}${extraInfo}`;
+                const bgColor = isDocente ? '#64748b' : (b.status === 'approved' ? color : '#f59e0b');
+                const bdColor = isDocente ? '#475569' : (b.status === 'approved' ? color : '#d97706');
 
                 return {
-                    id: b.id,
-                    title: eventTitle,
-                    start: `${b.date}T${b.startTime}`,
-                    end: `${b.date}T${b.endTime}`,
-                    backgroundColor: bgColor,
-                    borderColor: bdColor,
-                    textColor: '#ffffff'
+                    id: b.id, title: eventTitle, start: `${b.date}T${b.startTime}`, end: `${b.date}T${b.endTime}`,
+                    backgroundColor: bgColor, borderColor: bdColor, textColor: '#ffffff'
                 };
             });
 
-            // Aggiunta delle ore fisse scolastiche
-            const recurringEvents = getRecurringFixedEvents();
-            recurringEvents.forEach(re => {
-                if (selectedLabFilter === 'ALL' || selectedLabFilter === re.lab) {
-                    events.push(re);
-                }
+            getRecurringFixedEvents().forEach(re => {
+                if (selectedLabFilter === 'ALL' || selectedLabFilter === re.lab) events.push(re);
             });
-
             return events;
         }
 
@@ -743,77 +579,46 @@
             let events = [];
             let start = new Date(2026, 0, 1);
             let end = new Date(2027, 5, 10);
-
             for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-                let dayOfWeek = d.getDay(); // 0 = Dom, 1 = Lun, 2 = Mar, 3 = Mer, 4 = Gio, 5 = Ven, 6 = Sab
+                let dayOfWeek = d.getDay();
                 let dateStr = getLocalDateString(d.getFullYear(), d.getMonth() + 1, d.getDate());
-
-                // --- TOPOGRAFIA (P1) - Gestione ora per ora ---
-                // Lunedì (1): 1ª, 2ª, 3ª, 4ª ora
                 if (dayOfWeek === 1) {
                     events.push({ id: `fixed-topo-${dateStr}-1a`, lab: 'Topografia (P1)', title: '🔒 Topografia - 1ª ora', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-1b`, lab: 'Topografia (P1)', title: '🔒 Topografia - 2ª ora', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-1c`, lab: 'Topografia (P1)', title: '🔒 Topografia - 3ª ora', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-1d`, lab: 'Topografia (P1)', title: '🔒 Topografia - 4ª ora', start: `${dateStr}T11:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-info-${dateStr}-1`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (1ª-2ª)', start: `${dateStr}T08:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                    events.push({ id: `fixed-3d-${dateStr}-1`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (3ª-4ª)', start: `${dateStr}T10:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                 }
-                // Martedì (2): 1ª, 2ª, 3ª ora e 5ª, 6ª ora (4ª ora LIBERA)
                 if (dayOfWeek === 2) {
                     events.push({ id: `fixed-topo-${dateStr}-2a`, lab: 'Topografia (P1)', title: '🔒 Topografia - 1ª ora', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-2b`, lab: 'Topografia (P1)', title: '🔒 Topografia - 2ª ora', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-2c`, lab: 'Topografia (P1)', title: '🔒 Topografia - 3ª ora', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
-                    // 4ª ora (11:00-12:00) LIBERA
                     events.push({ id: `fixed-topo-${dateStr}-2e`, lab: 'Topografia (P1)', title: '🔒 Topografia - 5ª ora', start: `${dateStr}T12:00:00`, end: `${dateStr}T13:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-2f`, lab: 'Topografia (P1)', title: '🔒 Topografia - 6ª ora', start: `${dateStr}T13:00:00`, end: `${dateStr}T14:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-info-${dateStr}-2`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (5ª-6ª)', start: `${dateStr}T12:00:00`, end: `${dateStr}T14:00:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                    events.push({ id: `fixed-3d-${dateStr}-2`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (4ª)', start: `${dateStr}T11:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                 }
-                // Mercoledì (3): 1ª, 2ª, 3ª, 4ª ora
                 if (dayOfWeek === 3) {
                     events.push({ id: `fixed-topo-${dateStr}-3a`, lab: 'Topografia (P1)', title: '🔒 Topografia - 1ª ora', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-3b`, lab: 'Topografia (P1)', title: '🔒 Topografia - 2ª ora', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-3c`, lab: 'Topografia (P1)', title: '🔒 Topografia - 3ª ora', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-3d`, lab: 'Topografia (P1)', title: '🔒 Topografia - 4ª ora', start: `${dateStr}T11:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-info-${dateStr}-3`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (5ª)', start: `${dateStr}T12:00:00`, end: `${dateStr}T13:00:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
+                    events.push({ id: `fixed-3d-${dateStr}-3`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (2ª)', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                 }
-                // Giovedì (4): 2ª, 3ª, 4ª, 5ª, 6ª ora (1ª ora LIBERA)
                 if (dayOfWeek === 4) {
-                    // 1ª ora (08:00-09:00) LIBERA
                     events.push({ id: `fixed-topo-${dateStr}-4b`, lab: 'Topografia (P1)', title: '🔒 Topografia - 2ª ora', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-4c`, lab: 'Topografia (P1)', title: '🔒 Topografia - 3ª ora', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-4d`, lab: 'Topografia (P1)', title: '🔒 Topografia - 4ª ora', start: `${dateStr}T11:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-4e`, lab: 'Topografia (P1)', title: '🔒 Topografia - 5ª ora', start: `${dateStr}T12:00:00`, end: `${dateStr}T13:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-4f`, lab: 'Topografia (P1)', title: '🔒 Topografia - 6ª ora', start: `${dateStr}T13:00:00`, end: `${dateStr}T14:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
+                    events.push({ id: `fixed-3d-${dateStr}-4`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (1ª)', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                 }
-                // Venerdì (5): COMPLETAMENTE LIBERO
-                // Sabato (6): 1ª, 2ª, 3ª ora
                 if (dayOfWeek === 6) {
                     events.push({ id: `fixed-topo-${dateStr}-6a`, lab: 'Topografia (P1)', title: '🔒 Topografia - 1ª ora', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-6b`, lab: 'Topografia (P1)', title: '🔒 Topografia - 2ª ora', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
                     events.push({ id: `fixed-topo-${dateStr}-6c`, lab: 'Topografia (P1)', title: '🔒 Topografia - 3ª ora', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#7c3aed', borderColor: '#6d28d9', textColor: '#ffffff' });
-                }
-
-                // --- INFORMATICA (P2) ---
-                if (dayOfWeek === 1) {
-                    events.push({ id: `fixed-info-${dateStr}-1`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (1ª-2ª)', start: `${dateStr}T08:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
-                }
-                if (dayOfWeek === 2) {
-                    events.push({ id: `fixed-info-${dateStr}-2`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (5ª-6ª)', start: `${dateStr}T12:00:00`, end: `${dateStr}T14:00:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
-                }
-                if (dayOfWeek === 3) {
-                    events.push({ id: `fixed-info-${dateStr}-3`, lab: 'Informatica (P2)', title: '🔒 Informatica - Fisso (5ª)', start: `${dateStr}T12:00:00`, end: `${dateStr}T13:00:00`, backgroundColor: '#1d4ed8', borderColor: '#1e40af', textColor: '#ffffff' });
-                }
-
-                // --- STAMPA 3D (P1) ---
-                if (dayOfWeek === 1) { // Lunedì: 3ª e 4ª ora (10:00 - 12:00)
-                    events.push({ id: `fixed-3d-${dateStr}-1`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (3ª-4ª)', start: `${dateStr}T10:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
-                }
-                if (dayOfWeek === 2) { // Martedì: 4ª ora (11:00 - 12:00)
-                    events.push({ id: `fixed-3d-${dateStr}-2`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (4ª)', start: `${dateStr}T11:00:00`, end: `${dateStr}T12:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
-                }
-                if (dayOfWeek === 3) { // Mercoledì: 2ª ora (9:00 - 10:00)
-                    events.push({ id: `fixed-3d-${dateStr}-3`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (2ª)', start: `${dateStr}T09:00:00`, end: `${dateStr}T10:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
-                }
-                if (dayOfWeek === 4) { // Giovedì: 1ª ora (8:00 - 9:00)
-                    events.push({ id: `fixed-3d-${dateStr}-4`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (1ª)', start: `${dateStr}T08:00:00`, end: `${dateStr}T09:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
-                }
-                if (dayOfWeek === 6) { // Sabato: 3ª ora (10:00 - 11:00) e 5ª ora (12:00 - 13:00)
                     events.push({ id: `fixed-3d-${dateStr}-6a`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (3ª)', start: `${dateStr}T10:00:00`, end: `${dateStr}T11:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                     events.push({ id: `fixed-3d-${dateStr}-6b`, lab: 'Stampa 3D (P1)', title: '🔒 Stampa 3D - Fisso (5ª)', start: `${dateStr}T12:00:00`, end: `${dateStr}T13:00:00`, backgroundColor: '#0891b2', borderColor: '#0e7490', textColor: '#ffffff' });
                 }
@@ -831,32 +636,21 @@
 
         function isFixedConflict(lab, dateStr, slotType) {
             const dateObj = parseLocalDate(dateStr);
-            const dayOfWeek = dateObj.getDay(); // 0 = Domenica, 1 = Lunedì, 2 = Martedì, 3 = Mercoledì, 4 = Giovedì, 5 = Venerdì, 6 = Sabato
-
+            const dayOfWeek = dateObj.getDay();
             if (lab === 'Topografia (P1)') {
-                // Lunedì (1): 1ª, 2ª, 3ª, 4ª ora occupate
                 if (dayOfWeek === 1 && ['1', '2', '3', '4'].includes(slotType)) return true;
-                // Martedì (2): 1ª, 2ª, 3ª ora e 5ª, 6ª ora occupate (libera 4ª ora)
                 if (dayOfWeek === 2 && ['1', '2', '3', '5', '6'].includes(slotType)) return true;
-                // Mercoledì (3): 1ª, 2ª, 3ª, 4ª ora occupate
                 if (dayOfWeek === 3 && ['1', '2', '3', '4'].includes(slotType)) return true;
-                // Giovedì (4): 2ª, 3ª, 4ª, 5ª, 6ª ora occupate (prenotabile 1ª ora)
                 if (dayOfWeek === 4 && ['2', '3', '4', '5', '6'].includes(slotType)) return true;
-                // Venerdì (5): Libero
-                // Sabato (6): 1ª, 2ª, 3ª ora occupate
                 if (dayOfWeek === 6 && ['1', '2', '3'].includes(slotType)) return true;
-                
-                // Intera giornata bloccata se ci sono ore fisse nel giorno
                 if (slotType === 'full' && [1, 2, 3, 4, 6].includes(dayOfWeek)) return true;
             }
-
             if (lab === 'Informatica (P2)') {
                 if (dayOfWeek === 1 && ['1', '2'].includes(slotType)) return true;
                 if (dayOfWeek === 2 && ['5', '6'].includes(slotType)) return true;
                 if (dayOfWeek === 3 && ['5'].includes(slotType)) return true;
                 if (slotType === 'full' && [1, 2, 3].includes(dayOfWeek)) return true;
             }
-
             if (lab === 'Stampa 3D (P1)') {
                 if (dayOfWeek === 1 && ['3', '4'].includes(slotType)) return true;
                 if (dayOfWeek === 2 && ['4'].includes(slotType)) return true;
@@ -865,7 +659,6 @@
                 if (dayOfWeek === 6 && ['3', '5'].includes(slotType)) return true;
                 if (slotType === 'full' && [1, 2, 3, 4, 6].includes(dayOfWeek)) return true;
             }
-
             return false;
         }
 
@@ -884,34 +677,25 @@
             document.getElementById('book-date').value = dateStr;
         }
 
-        function closeBookingModal() {
-            document.getElementById('booking-modal').classList.add('hidden');
-        }
+        function closeBookingModal() { document.getElementById('booking-modal').classList.add('hidden'); }
 
         function handleLabChange() {
             const labSelect = document.getElementById('book-lab');
             const nbContainer = document.getElementById('notebook-count-container');
             const topoContainer = document.getElementById('topo-material-container');
             const topoInput = document.getElementById('book-topo-material');
-
             if (labSelect && nbContainer && topoContainer && topoInput) {
                 if (labSelect.value === 'Notebook (Uff. Tec.)') {
-                    nbContainer.classList.remove('hidden');
-                    topoContainer.classList.add('hidden');
-                    topoInput.removeAttribute('required');
+                    nbContainer.classList.remove('hidden'); topoContainer.classList.add('hidden'); topoInput.removeAttribute('required');
                 } else if (labSelect.value === 'Materiale Topografia') {
-                    topoContainer.classList.remove('hidden');
-                    nbContainer.classList.add('hidden');
-                    topoInput.setAttribute('required', 'true');
+                    topoContainer.classList.remove('hidden'); nbContainer.classList.add('hidden'); topoInput.setAttribute('required', 'true');
                 } else {
-                    nbContainer.classList.add('hidden');
-                    topoContainer.classList.add('hidden');
-                    topoInput.removeAttribute('required');
+                    nbContainer.classList.add('hidden'); topoContainer.classList.add('hidden'); topoInput.removeAttribute('required');
                 }
             }
         }
 
-        function handleBookingSubmit(e) {
+        async function handleBookingSubmit(e) {
             e.preventDefault();
             const editId = document.getElementById('edit-booking-id').value;
             const teacher = document.getElementById('book-teacher').value;
@@ -925,21 +709,8 @@
             const notebookQty = lab === 'Notebook (Uff. Tec.)' ? parseInt(document.getElementById('book-notebook-qty').value) : null;
             const topoMaterial = lab === 'Materiale Topografia' ? document.getElementById('book-topo-material').value : null;
 
-            if (date > '2027-06-10') {
-                alert('La data supera il limite massimo consentito del 10 Giugno 2027.');
-                return;
-            }
-
-            if (isFixedConflict(lab, date, slotType)) {
-                alert(`Impossibile prenotare ${lab}: l'orario selezionato coincide con le ore di occupazione fissa scolastica!`);
-                return;
-            }
-
-            const existingConflict = bookings.find(b => b.lab === lab && b.date === date && b.slotType === slotType && b.status !== 'rejected' && b.id !== editId);
-            if (existingConflict) {
-                alert(`Attenzione: Esiste già una prenotazione confermata o in attesa per "${lab}" in questa data e fascia oraria.`);
-                return;
-            }
+            if (date > '2027-06-10') { alert('La data supera il limite massimo del 10 Giugno 2027.'); return; }
+            if (isFixedConflict(lab, date, slotType)) { alert(`Impossibile prenotare ${lab}: orario occupato da orario fisso scolastico!`); return; }
 
             let startTime = '08:00', endTime = '09:00';
             if (slotType === '1') { startTime = '08:00'; endTime = '09:00'; }
@@ -950,24 +721,16 @@
             else if (slotType === '6') { startTime = '13:00'; endTime = '14:00'; }
             else if (slotType === 'full') { startTime = '08:00'; endTime = '14:00'; }
 
+            const submitBtn = document.getElementById('booking-submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Invio in corso...";
+
             if (editId) {
                 const b = bookings.find(item => item.id === editId);
                 if (b) {
-                    b.teacher = teacher;
-                    b.teacherEmail = teacherEmail;
-                    b.subject = subject;
-                    b.lab = lab;
-                    b.schoolClass = schoolClass;
-                    b.date = date;
-                    b.slotType = slotType;
-                    b.startTime = startTime;
-                    b.endTime = endTime;
-                    b.notes = notes;
-                    b.notebookQty = notebookQty;
-                    b.topoMaterial = topoMaterial;
-                    
+                    Object.assign(b, { teacher, teacherEmail, subject, lab, schoolClass, date, slotType, startTime, endTime, notes, notebookQty, topoMaterial });
+                    await syncWithGoogle({ action: "update", booking: b, notifyText: "MODIFICATA DALL'UFFICIO TECNICO" });
                     alert(`Prenotazione di ${teacher} aggiornata con successo!`);
-                    sendNotificationEmail(b, 'MODIFICATA DALL\'UFFICIO TECNICO');
                 }
             } else {
                 const bookingStatus = currentRole === 'tecnico' ? 'approved' : 'pending';
@@ -976,15 +739,17 @@
                     lab, teacher, teacherEmail, subject, schoolClass, date, slotType, startTime, endTime, notebookQty, topoMaterial, notes,
                     status: bookingStatus
                 };
-                bookings.push(newBooking);
+                await syncWithGoogle({ action: "create", booking: newBooking });
+                await loadBookingsFromServer();
 
                 if (currentRole === 'docente') {
-                    alert(`Richiesta inoltrata con successo! La prenotazione per "${lab}" è in stato "In Attesa" di approvazione da parte dei tecnici.`);
+                    alert(`Richiesta inoltrata! La prenotazione è in attesa di approvazione ed è stata notificata all'Ufficio Tecnico.`);
                 } else {
-                    alert(`Prenotazione per "${lab}" registrata e approvata con successo!`);
+                    alert(`Prenotazione registrata e approvata con successo!`);
                 }
             }
 
+            submitBtn.disabled = false;
             closeBookingModal();
             refreshAll();
         }
@@ -995,7 +760,6 @@
                 calendar.addEventSource(prepareCalendarEvents());
             }
             renderPendingTable();
-            renderAllBookingsTable();
             updateStats();
         }
 
@@ -1010,13 +774,8 @@
             grid.innerHTML = labs.map(l => `
                 <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4">
                     <div class="flex items-center space-x-3">
-                        <div class="p-3 rounded-xl text-white shadow-sm" style="background-color: ${l.color}">
-                            <i class="fa-solid ${l.icon} text-lg"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-slate-800 text-sm">${l.name}</h4>
-                            <p class="text-xs text-slate-500">${l.location}</p>
-                        </div>
+                        <div class="p-3 rounded-xl text-white shadow-sm" style="background-color: ${l.color}"><i class="fa-solid ${l.icon} text-lg"></i></div>
+                        <div><h4 class="font-bold text-slate-800 text-sm">${l.name}</h4><p class="text-xs text-slate-500">${l.location}</p></div>
                     </div>
                     <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                         <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg">Disponibile</span>
@@ -1034,37 +793,32 @@
 
         function renderPendingTable() {
             const tbody = document.getElementById('bookings-table-body');
-            const activeBookings = bookings;
-
-            if (activeBookings.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 text-xs">Nessuna prenotazione inserita. Il sistema è pronto per le nuove richieste.</td></tr>`;
+            if (bookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400 text-xs">Nessuna prenotazione inserita.</td></tr>`;
                 return;
             }
-
-            tbody.innerHTML = activeBookings.map(b => {
-                let badge = '';
-                if (b.status === 'approved') badge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">Approvata</span>`;
-                else if (b.status === 'pending') badge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800">In Attesa</span>`;
-                else badge = `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800">Rifiutata</span>`;
-
-                let extraText = '';
-                if (b.notebookQty) extraText = `<br><span class="text-xs text-indigo-600 font-semibold">${b.notebookQty} Notebook</span>`;
-                if (b.topoMaterial) extraText = `<br><span class="text-xs text-cyan-700 font-semibold">${b.topoMaterial}</span>`;
+            const isTech = currentRole === 'tecnico';
+            tbody.innerHTML = bookings.map(b => {
+                let badge = b.status === 'approved' ? `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-emerald-100 text-emerald-800">Approvata</span>`
+                          : b.status === 'pending' ? `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-amber-100 text-amber-800">In Attesa</span>`
+                          : `<span class="px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-rose-100 text-rose-800">Rifiutata</span>`;
+                let extraText = (isTech && b.notebookQty) ? `<br><span class="text-xs text-indigo-600 font-semibold">${b.notebookQty} Notebook</span>` : (isTech && b.topoMaterial) ? `<br><span class="text-xs text-cyan-700 font-semibold">${b.topoMaterial}</span>` : '';
+                
+                const teacherDisplay = isTech ? `${b.teacher}<br><span class="text-xs text-slate-500">${b.schoolClass}</span>` : `<span class="text-slate-400 italic">Riservato</span>`;
+                const subjectDisplay = isTech ? `${b.subject}${extraText}` : `<span class="text-slate-400 italic">Occupato</span>`;
 
                 return `
                     <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                        <td class="p-3.5 text-slate-700 font-medium">
-                            ${b.date}<br><span class="text-xs text-slate-400">${b.startTime} - ${b.endTime}</span>
-                        </td>
+                        <td class="p-3.5 text-slate-700 font-medium">${b.date}<br><span class="text-xs text-slate-400">${b.startTime} - ${b.endTime}</span></td>
                         <td class="p-3.5 font-semibold text-slate-800">${b.lab}</td>
-                        <td class="p-3.5 text-slate-700">${b.teacher}<br><span class="text-xs text-slate-500">${b.schoolClass}</span></td>
-                        <td class="p-3.5 text-slate-600">${b.subject}${extraText}</td>
+                        <td class="p-3.5 text-slate-700">${teacherDisplay}</td>
+                        <td class="p-3.5 text-slate-600">${subjectDisplay}</td>
                         <td class="p-3.5">${badge}</td>
                         <td class="p-3.5 text-right space-x-1.5">
-                            <button onclick="openDetailModal('${b.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold transition">Dettagli</button>
-                            ${currentRole === 'tecnico' ? `
-                                <button onclick="quickEdit('${b.id}')" title="Modifica" class="px-2 py-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-pen"></i></button>
-                                <button onclick="quickDelete('${b.id}')" title="Cancella" class="px-2 py-1 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg text-xs font-semibold transition"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="openDetailModal('${b.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Dettagli</button>
+                            ${isTech ? `
+                                <button onclick="quickEdit('${b.id}')" title="Modifica" class="px-2 py-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg text-xs"><i class="fa-solid fa-pen"></i></button>
+                                <button onclick="quickDelete('${b.id}')" title="Cancella" class="px-2 py-1 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg text-xs"><i class="fa-solid fa-trash"></i></button>
                             ` : ''}
                         </td>
                     </tr>
@@ -1072,98 +826,74 @@
             }).join('');
         }
 
-        function renderAllBookingsTable() {
-            renderPendingTable();
-        }
-
         function filterBookingsTable() {
             const query = document.getElementById('search-input').value.toLowerCase();
-            const rows = document.querySelectorAll('#bookings-table-body tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
+            document.querySelectorAll('#bookings-table-body tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
             });
         }
 
-        // Detail Modal
         function openDetailModal(id) {
             activeDetailBookingId = id;
             const b = bookings.find(item => item.id === id);
             if (!b) return;
+            const isTech = currentRole === 'tecnico';
 
             document.getElementById('detail-lab').textContent = b.lab;
-            document.getElementById('detail-teacher').textContent = b.teacher;
+            document.getElementById('detail-teacher').textContent = isTech ? b.teacher : 'Riservato (Privacy)';
+            document.getElementById('detail-email-row').style.display = isTech ? 'flex' : 'none';
             document.getElementById('detail-email').textContent = b.teacherEmail || 'Non specificata';
-            document.getElementById('detail-subject').textContent = b.subject;
-            document.getElementById('detail-class').textContent = b.schoolClass;
+            document.getElementById('detail-subject').textContent = isTech ? b.subject : 'Occupato';
+            document.getElementById('detail-class').textContent = isTech ? b.schoolClass : 'Riservata';
             document.getElementById('detail-datetime').textContent = `${b.date} (${b.startTime} - ${b.endTime})`;
+            
+            document.getElementById('detail-notes-container').style.display = isTech ? 'block' : 'none';
             document.getElementById('detail-notes').textContent = b.notes || 'Nessuna nota aggiuntiva.';
 
             const eqContainer = document.getElementById('detail-equipment-container');
             const eqText = document.getElementById('detail-equipment');
-            if (b.notebookQty) {
-                eqContainer.classList.remove('hidden');
-                eqText.textContent = `${b.notebookQty} Notebook richiesti`;
-            } else if (b.topoMaterial) {
-                eqContainer.classList.remove('hidden');
-                eqText.textContent = b.topoMaterial;
-            } else {
-                eqContainer.classList.add('hidden');
-            }
+            if (isTech && b.notebookQty) { eqContainer.classList.remove('hidden'); eqText.textContent = `${b.notebookQty} Notebook`; }
+            else if (isTech && b.topoMaterial) { eqContainer.classList.remove('hidden'); eqText.textContent = b.topoMaterial; }
+            else { eqContainer.classList.add('hidden'); }
 
             const statusEl = document.getElementById('detail-status');
-            if (b.status === 'approved') {
-                statusEl.textContent = 'Approvata';
-                statusEl.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800';
-            } else if (b.status === 'pending') {
-                statusEl.textContent = 'In Attesa';
-                statusEl.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-100 text-amber-800';
-            } else {
-                statusEl.textContent = 'Rifiutata';
-                statusEl.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-rose-100 text-rose-800';
-            }
+            statusEl.textContent = b.status === 'approved' ? 'Approvata' : b.status === 'pending' ? 'In Attesa' : 'Rifiutata';
+            statusEl.className = b.status === 'approved' ? 'px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-emerald-100 text-emerald-800'
+                               : b.status === 'pending' ? 'px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-amber-100 text-amber-800'
+                               : 'px-2.5 py-0.5 rounded-full text-xs font-bold uppercase bg-rose-100 text-rose-800';
 
             const techActions = document.getElementById('technician-actions');
             const approvalBtns = document.getElementById('approval-buttons');
-
-            if (currentRole === 'tecnico') {
+            if (isTech) {
                 techActions.classList.remove('hidden');
-                if (b.status === 'pending') {
-                    approvalBtns.classList.remove('hidden');
-                } else {
-                    approvalBtns.classList.add('hidden');
-                }
-            } else {
-                techActions.classList.add('hidden');
-            }
-
+                if (b.status === 'pending') approvalBtns.classList.remove('hidden'); else approvalBtns.classList.add('hidden');
+            } else { techActions.classList.add('hidden'); }
             document.getElementById('detail-modal').classList.remove('hidden');
         }
 
-        function closeDetailModal() {
-            document.getElementById('detail-modal').classList.add('hidden');
-            activeDetailBookingId = null;
-        }
+        function closeDetailModal() { document.getElementById('detail-modal').classList.add('hidden'); activeDetailBookingId = null; }
 
-        function approveCurrentBooking() {
+        async function approveCurrentBooking() {
             if (!activeDetailBookingId || currentRole !== 'tecnico') return;
             const b = bookings.find(item => item.id === activeDetailBookingId);
             if (b) {
                 b.status = 'approved';
                 closeDetailModal();
                 refreshAll();
-                sendNotificationEmail(b, 'APPROVATA');
+                await syncWithGoogle({ action: "update", booking: b, notifyText: "APPROVATA" });
+                alert(`Prenotazione approvata e notifica inviata a ${b.teacherEmail}`);
             }
         }
 
-        function rejectCurrentBooking() {
+        async function rejectCurrentBooking() {
             if (!activeDetailBookingId || currentRole !== 'tecnico') return;
             const b = bookings.find(item => item.id === activeDetailBookingId);
             if (b) {
                 b.status = 'rejected';
                 closeDetailModal();
                 refreshAll();
-                sendNotificationEmail(b, 'RIFIUTATA');
+                await syncWithGoogle({ action: "update", booking: b, notifyText: "RIFIUTATA" });
+                alert(`Prenotazione rifiutata e notifica inviata a ${b.teacherEmail}`);
             }
         }
 
@@ -1178,12 +908,10 @@
             if (currentRole !== 'tecnico') return;
             const b = bookings.find(item => item.id === id);
             if (!b) return;
-
             openBookingModal();
             document.getElementById('edit-booking-id').value = b.id;
-            document.getElementById('booking-modal-title').textContent = 'Modifica Prenotazione (Tecnico / Admin)';
+            document.getElementById('booking-modal-title').textContent = 'Modifica Prenotazione';
             document.getElementById('booking-submit-btn').textContent = 'Salva Modifiche';
-
             document.getElementById('book-teacher').value = b.teacher;
             document.getElementById('book-email').value = b.teacherEmail || '';
             document.getElementById('book-subject').value = b.subject;
@@ -1192,7 +920,6 @@
             document.getElementById('book-date').value = b.date;
             document.getElementById('book-slot-type').value = b.slotType || '1';
             document.getElementById('book-notes').value = b.notes || '';
-
             handleLabChange();
             if (b.notebookQty) document.getElementById('book-notebook-qty').value = b.notebookQty;
             if (b.topoMaterial) document.getElementById('book-topo-material').value = b.topoMaterial;
@@ -1200,135 +927,65 @@
 
         function deleteCurrentBooking() {
             if (!activeDetailBookingId || currentRole !== 'tecnico') return;
-            const idToDelete = activeDetailBookingId;
+            quickDelete(activeDetailBookingId);
             closeDetailModal();
-            quickDelete(idToDelete);
         }
 
-        function quickDelete(id) {
+        async function quickDelete(id) {
             if (currentRole !== 'tecnico') return;
             const b = bookings.find(item => item.id === id);
             if (!b) return;
-
-            if (confirm(`Sei sicuro di voler CANCELLARE la prenotazione di ${b.teacher} per il giorno ${b.date}?`)) {
+            if (confirm(`Cancellare la prenotazione di ${b.teacher} per il ${b.date}?`)) {
                 bookings = bookings.filter(item => item.id !== id);
                 refreshAll();
-                sendNotificationEmail(b, 'CANCELLATA DALL\'UFFICIO TECNICO');
+                await syncWithGoogle({ action: "delete", booking: b });
                 alert("Prenotazione cancellata con successo.");
             }
         }
 
-        // Funzione di Invio Automatico via Google Apps Script
-        function sendNotificationEmail(booking, statusType) {
-            if (!booking.teacherEmail) {
-                alert(`Prenotazione ${statusType}, ma non è stata inserita l'email del docente per la notifica.`);
-                return;
-            }
-
-            const subjectText = `Esito Prenotazione Laboratorio Zaccagna - ${statusType}`;
-            const bodyText = `Gentile ${booking.teacher},\n\nLa Sua richiesta di prenotazione per la risorsa "${booking.lab}" in data ${booking.date} (${booking.startTime}-${booking.endTime}) per la classe ${booking.schoolClass} è stata ${statusType}.\n\nNote/Dettagli: ${booking.notes || 'Nessuna'}\n\nCordiali saluti,\nUfficio Tecnico Zaccagna (tecnici.zaccagna@gmail.com)`;
-
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    to: booking.teacherEmail,
-                    subject: subjectText,
-                    body: bodyText
-                })
-            }).then(() => {
-                alert(`Notifica inviata con successo via e-mail al docente (${booking.teacherEmail}) tramite l'account ufficiale tecnici.zaccagna@gmail.com!`);
-            }).catch(err => {
-                console.error(err);
-                alert("Errore durante l'invio dell'e-mail.");
-            });
-        }
-
-        // Add Lab Modal (Admin)
         function openLabModal() {
             if (currentRole !== 'tecnico') return;
             document.getElementById('lab-modal').classList.remove('hidden');
             document.getElementById('lab-form').reset();
         }
 
-        function closeLabModal() {
-            document.getElementById('lab-modal').classList.add('hidden');
-        }
+        function closeLabModal() { document.getElementById('lab-modal').classList.add('hidden'); }
 
         function handleLabSubmit(e) {
             e.preventDefault();
             if (currentRole !== 'tecnico') return;
-
             const name = document.getElementById('lab-name').value;
             const location = document.getElementById('lab-location').value;
             const color = document.getElementById('lab-color').value;
-
-            const newLab = {
-                id: 'l_' + Date.now(),
-                name, location, color,
-                icon: 'fa-flask'
-            };
-
-            labs.push(newLab);
+            labs.push({ id: 'l_' + Date.now(), name, location, color, icon: 'fa-flask' });
             LAB_COLORS[name] = color;
             closeLabModal();
             renderLabsGrid();
-
-            const selects = document.querySelectorAll('#book-lab, #calendar-lab-filter');
-            selects.forEach(sel => {
+            document.querySelectorAll('#book-lab, #calendar-lab-filter').forEach(sel => {
                 const opt = document.createElement('option');
-                opt.value = name;
-                opt.textContent = name;
+                opt.value = name; opt.textContent = name;
                 sel.appendChild(opt);
             });
         }
 
-        // Share & QR Code Modal
         function openShareFormModal() {
             document.getElementById('share-form-modal').classList.remove('hidden');
-            
-            let cleanUrl = window.location.href.split('?')[0];
-            const formUrl = cleanUrl;
-
+            const formUrl = window.location.href.split('?')[0];
             document.getElementById('share-url-input').value = formUrl;
-            
-            const emailLink = document.getElementById('email-share-link');
-            emailLink.href = `mailto:?subject=${encodeURIComponent('Calendario Laboratori - Tecnici Zaccagna')}&body=${encodeURIComponent('Gentili docenti, potete consultare il calendario delle disponibilità dei laboratori al seguente link:\n\n' + formUrl)}`;
-
+            document.getElementById('email-share-link').href = `mailto:?subject=${encodeURIComponent('Calendario Laboratori - Tecnici Zaccagna')}&body=${encodeURIComponent('Gentili docenti, potete consultare il calendario al link:\n\n' + formUrl)}`;
             const qrContainer = document.getElementById('qrcode-container');
             qrContainer.innerHTML = '';
-            
             if (typeof QRCode !== 'undefined') {
-                qrcodeInstance = new QRCode(qrContainer, {
-                    text: formUrl,
-                    width: 180,
-                    height: 180,
-                    colorDark: "#1e1b4b",
-                    colorLight: "#ffffff",
-                    correctLevel: QRCode.CorrectLevel.H
-                });
-            } else {
-                qrContainer.innerHTML = '<span class="text-xs text-rose-600">Libreria QR non caricata</span>';
+                new QRCode(qrContainer, { text: formUrl, width: 180, height: 180, colorDark: "#1e1b4b", colorLight: "#ffffff" });
             }
         }
 
-        function closeShareFormModal() {
-            document.getElementById('share-form-modal').classList.add('hidden');
-        }
+        function closeShareFormModal() { document.getElementById('share-form-modal').classList.add('hidden'); }
 
         function copyShareUrl() {
             const input = document.getElementById('share-url-input');
             input.select();
-            input.setSelectionRange(0, 99999);
-            try {
-                document.execCommand('copy');
-                alert('URL del calendario copiato negli appunti!');
-            } catch (err) {
-                alert('Impossibile copiare automaticamente.');
-            }
+            try { document.execCommand('copy'); alert('URL copiato negli appunti!'); } catch (err) { alert('Impossibile copiare.'); }
         }
     </script>
 </body>
